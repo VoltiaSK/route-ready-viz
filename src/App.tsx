@@ -20,8 +20,9 @@ const EmbedVisualization = () => {
 };
 
 const App = () => {
-  // Check if we're being directly embedded
-  const isEmbedMode = window.location.pathname === '/embed';
+  // Check if we're being directly embedded (either via iframe or in a web component)
+  const isEmbedMode = window.location.pathname === '/embed' || 
+                      (!window.location.pathname || window.location.pathname === '/') && window !== window.parent;
   
   if (isEmbedMode) {
     return (

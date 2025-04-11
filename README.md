@@ -1,73 +1,114 @@
-# Welcome to your Lovable project
 
-## Project info
+# Fleet Electrification Visualization
 
-**URL**: https://lovable.dev/projects/91e46941-5e93-4f66-b138-d9ce109adaad
+A visualization tool for analyzing fleet electrification readiness.
 
-## How can I edit this code?
+## Setup and Development
 
-There are several ways of editing your application.
+### Prerequisites
+- Node.js (v14 or later)
+- npm or yarn
 
-**Use Lovable**
+### Installation
+```bash
+# Install dependencies
+npm install
+```
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/91e46941-5e93-4f66-b138-d9ce109adaad) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### Development
+```bash
+# Run development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Building the Project
+```bash
+# Build for production
+npm run build
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Generating Fleet Data
 
-**Use GitHub Codespaces**
+To generate the template JSON file with 150 vehicles:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```bash
+# Run the data generation script
+npx ts-node src/utils/generateTemplateJSON.ts
+```
 
-## What technologies are used for this project?
+This will create a file at `public/fleetData.json` containing simulated vehicle data.
 
-This project is built with:
+## Deployment to Vercel
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Setup
 
-## How can I deploy this project?
+1. Push your repository to GitHub
+2. Visit [vercel.com](https://vercel.com) and log in
+3. Click "New Project" and import your GitHub repository
+4. Configure the project:
+   - Framework Preset: Vite
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+5. Click "Deploy"
 
-Simply open [Lovable](https://lovable.dev/projects/91e46941-5e93-4f66-b138-d9ce109adaad) and click on Share -> Publish.
+## Embedding in Webflow
 
-## Can I connect a custom domain to my Lovable project?
+### Method 1: Web Component (Recommended)
 
-Yes it is!
+1. After deployment, your Web Component will be available at:
+   ```
+   https://your-vercel-domain.com/fleet-visualization.js
+   ```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+2. In Webflow, add a new "Embed" element where you want the visualization
+3. Insert this code:
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+   ```html
+   <script src="https://your-vercel-domain.com/fleet-visualization.js"></script>
+   <fleet-visualization style="width: 100%; height: 800px;"></fleet-visualization>
+   ```
+
+4. To use custom JSON data:
+
+   ```html
+   <script src="https://your-vercel-domain.com/fleet-visualization.js"></script>
+   <fleet-visualization data-url="https://example.com/your-vehicle-data.json" style="width: 100%; height: 800px;"></fleet-visualization>
+   ```
+
+### Method 2: iframe Embed
+
+If you prefer using an iframe:
+
+```html
+<iframe src="https://your-vercel-domain.com" width="100%" height="800" frameborder="0" scrolling="no"></iframe>
+```
+
+With custom data:
+
+```html
+<iframe src="https://your-vercel-domain.com?dataUrl=https://example.com/your-vehicle-data.json" width="100%" height="800" frameborder="0" scrolling="no"></iframe>
+```
+
+## JSON Data Format
+
+Your data should follow this format:
+
+```json
+{
+  "data": [
+    {
+      "depot": "SK",
+      "lorry": "7M73322",
+      "average_distance": 142,
+      "minimum_distance": 28,
+      "maximum_distance": 376,
+      "median_distance": 120,
+      "min_95_perc": 30,
+      "max_95_perc": 230,
+      "average_highway_distance": 85,
+      "median_highway": 72
+    }
+    // More vehicle entries...
+  ]
+}
+```
