@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { 
   BarChart3, 
   Battery, 
-  Bike, 
+  Building2,
   Car, 
   ChevronLeft, 
   Clock, 
@@ -191,7 +191,7 @@ const VehicleDetail = ({ vehicle, onClose }: VehicleDetailProps) => {
               >
                 {cityPercentage > 15 && (
                   <div className="flex items-center space-x-1 text-xs">
-                    <Bike size={12} />
+                    <Building2 size={12} />
                     <span>City</span>
                   </div>
                 )}

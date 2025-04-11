@@ -15,20 +15,79 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
   }
 };
 
-// For development/testing without external JSON
+// Generate vehicle ID (license plate)
+const generateVehicleId = (): string => {
+  const prefixes = ["7M", "8L", "9P"];
+  const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+  const randomNumber = String(Math.floor(10000 + Math.random() * 90000)).substring(0, 5);
+  return `${randomPrefix}${randomNumber}`;
+};
+
+// For development/testing with realistic data for EV adoption
 export const getMockVehicleData = (): VehicleData[] => {
-  return Array(150).fill(null).map((_, index) => ({
-    depot: ["CZ", "DE", "PL", "SK"][Math.floor(Math.random() * 4)],
-    lorry: `${["9P", "8L", "7M"][Math.floor(Math.random() * 3)]}${String(Math.floor(10000 + Math.random() * 90000)).substring(0, 5)}`,
-    average_distance: Math.floor(50 + Math.random() * 150),
-    minimum_distance: Math.floor(5 + Math.random() * 20),
-    maximum_distance: Math.floor(180 + Math.random() * 400),
-    median_distance: Math.floor(40 + Math.random() * 120),
-    min_95_perc: Math.floor(10 + Math.random() * 30),
-    max_95_perc: Math.floor(120 + Math.random() * 200),
-    average_highway_distance: Math.floor(Math.random() * 100),
-    median_highway: Math.floor(Math.random() * 80)
-  }));
+  const totalVehicles = 150;
+  const evReadyTarget = Math.floor(totalVehicles * 0.92); // 92% EV ready
+  
+  const vehicles: VehicleData[] = [];
+  
+  // EV Ready vehicles (most daily routes between 60km and 240km)
+  for (let i = 0; i < evReadyTarget; i++) {
+    const avgDistance = Math.floor(60 + Math.random() * 140); // 60-200km average
+    const minDistance = Math.floor(Math.max(10, avgDistance * 0.3 + (Math.random() * 20 - 10)));
+    const maxDistance = Math.floor(avgDistance * 1.5 + Math.random() * 60);
+    const medianDistance = Math.floor(avgDistance * 0.9 + Math.random() * 20);
+    
+    // 95% range - must be <= 250 for EV ready
+    const min95perc = Math.floor(Math.max(15, avgDistance * 0.4));
+    const max95perc = Math.min(250, Math.floor(avgDistance * 1.2 + Math.random() * 40));
+    
+    const avgHighwayDistance = Math.floor(avgDistance * (0.2 + Math.random() * 0.5));
+    const medianHighway = Math.floor(avgHighwayDistance * 0.9 + Math.random() * 10);
+    
+    vehicles.push({
+      depot: Math.random() > 0.5 ? "SK" : "CZ",
+      lorry: generateVehicleId(),
+      average_distance: avgDistance,
+      minimum_distance: minDistance,
+      maximum_distance: maxDistance,
+      median_distance: medianDistance,
+      min_95_perc: min95perc,
+      max_95_perc: max95perc,
+      average_highway_distance: avgHighwayDistance,
+      median_highway: medianHighway
+    });
+  }
+  
+  // Non-EV Ready vehicles (higher mileage)
+  for (let i = evReadyTarget; i < totalVehicles; i++) {
+    const avgDistance = Math.floor(180 + Math.random() * 120); // 180-300km average
+    const minDistance = Math.floor(Math.max(30, avgDistance * 0.3));
+    const maxDistance = Math.floor(avgDistance * 1.8 + Math.random() * 100);
+    const medianDistance = Math.floor(avgDistance * 0.95 + Math.random() * 30);
+    
+    // 95% range - must be > 250 for non-EV ready
+    const min95perc = Math.floor(Math.max(40, avgDistance * 0.5));
+    const max95perc = Math.floor(Math.max(251, avgDistance * 1.3 + Math.random() * 60));
+    
+    const avgHighwayDistance = Math.floor(avgDistance * (0.4 + Math.random() * 0.4));
+    const medianHighway = Math.floor(avgHighwayDistance * 0.9 + Math.random() * 15);
+    
+    vehicles.push({
+      depot: Math.random() > 0.5 ? "SK" : "CZ",
+      lorry: generateVehicleId(),
+      average_distance: avgDistance,
+      minimum_distance: minDistance,
+      maximum_distance: maxDistance,
+      median_distance: medianDistance,
+      min_95_perc: min95perc,
+      max_95_perc: max95perc,
+      average_highway_distance: avgHighwayDistance,
+      median_highway: medianHighway
+    });
+  }
+  
+  // Shuffle the array to mix EV ready and non-EV ready
+  return vehicles.sort(() => Math.random() - 0.5);
 };
 
 export const isVehicleEVReady = (vehicle: VehicleData): boolean => {
@@ -54,5 +113,12 @@ export const getFleetEVReadiness = (vehicles: VehicleData[]): {
     evReadyCount,
     evReadyPercentage,
     totalVehicles
+  };
+};
+
+// Function to generate a complete realistic JSON file
+export const generateTemplateJSON = (): VehicleDataResponse => {
+  return {
+    data: getMockVehicleData()
   };
 };

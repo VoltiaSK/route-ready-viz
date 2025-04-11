@@ -5,6 +5,7 @@ import { isVehicleEVReady } from "@/utils/dataFetcher";
 import { 
   BarChart3, 
   Battery, 
+  Building2,
   Car, 
   ChevronRight, 
   MapPin, 
