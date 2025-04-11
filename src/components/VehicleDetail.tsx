@@ -12,7 +12,7 @@ import {
   MapPin, 
   Maximize2, 
   Minimize2, 
-  Road, 
+  Route, 
   Router, 
   TrendingUp 
 } from "lucide-react";
@@ -125,7 +125,7 @@ const VehicleDetail = ({ vehicle, onClose }: VehicleDetailProps) => {
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-gray-50 p-3 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
-              <Road size={16} className="text-viz-primary" />
+              <Route size={16} className="text-viz-primary" />
               <h4 className="text-xs font-medium text-gray-600">Average Daily</h4>
             </div>
             <p className="text-lg font-bold">{vehicle.average_distance} km</p>
@@ -202,7 +202,7 @@ const VehicleDetail = ({ vehicle, onClose }: VehicleDetailProps) => {
               >
                 {highwayPercentage > 15 && (
                   <div className="flex items-center space-x-1 text-xs text-white">
-                    <Road size={12} />
+                    <Route size={12} />
                     <span>Highway</span>
                   </div>
                 )}

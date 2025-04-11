@@ -8,7 +8,7 @@ import {
   Car, 
   ChevronRight, 
   MapPin, 
-  Road, 
+  Route, 
   TrendingUp 
 } from "lucide-react";
 
@@ -48,7 +48,7 @@ const VehicleCard = ({ vehicle, onClick }: VehicleCardProps) => {
         {/* Average Daily Distance */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Road size={14} className="text-gray-500" />
+            <Route size={14} className="text-gray-500" />
             <span className="text-xs">Avg. daily:</span>
           </div>
           <span className="font-medium text-sm">{vehicle.average_distance} km</span>
