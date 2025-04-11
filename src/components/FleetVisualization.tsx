@@ -9,6 +9,15 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface FleetVisualizationProps {
   jsonUrl?: string;
@@ -24,6 +33,10 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterBy, setFilterBy] = useState<"all" | "ev-ready" | "not-ready">("all");
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const vehiclesPerPage = 24;
   
   // Fleet stats
   const [fleetStats, setFleetStats] = useState({
@@ -88,7 +101,147 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
     }
     
     setFilteredVehicles(result);
+    // Reset to first page when filters change
+    setCurrentPage(1);
   }, [vehicles, filterBy, searchTerm]);
+  
+  // Calculate pagination values
+  const indexOfLastVehicle = currentPage * vehiclesPerPage;
+  const indexOfFirstVehicle = indexOfLastVehicle - vehiclesPerPage;
+  const currentVehicles = filteredVehicles.slice(indexOfFirstVehicle, indexOfLastVehicle);
+  const totalPages = Math.ceil(filteredVehicles.length / vehiclesPerPage);
+  
+  // Change page
+  const paginate = (pageNumber: number) => {
+    if (pageNumber < 1 || pageNumber > totalPages) return;
+    setCurrentPage(pageNumber);
+  };
+  
+  // Generate pagination items
+  const renderPaginationItems = () => {
+    const items = [];
+    const maxVisiblePages = 5; // Maximum number of page links to show
+    
+    if (totalPages <= maxVisiblePages) {
+      // Show all pages if total pages is less than or equal to max visible pages
+      for (let i = 1; i <= totalPages; i++) {
+        items.push(
+          <PaginationItem key={i}>
+            <PaginationLink 
+              isActive={currentPage === i} 
+              onClick={() => paginate(i)}
+            >
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+    } else {
+      // Always show first page
+      items.push(
+        <PaginationItem key={1}>
+          <PaginationLink 
+            isActive={currentPage === 1} 
+            onClick={() => paginate(1)}
+          >
+            1
+          </PaginationLink>
+        </PaginationItem>
+      );
+      
+      let startPage, endPage;
+      if (currentPage <= 3) {
+        // Current page is near the start
+        startPage = 2;
+        endPage = 4;
+        
+        items.push(
+          ...Array.from({ length: endPage - startPage + 1 }, (_, i) => (
+            <PaginationItem key={startPage + i}>
+              <PaginationLink 
+                isActive={currentPage === startPage + i} 
+                onClick={() => paginate(startPage + i)}
+              >
+                {startPage + i}
+              </PaginationLink>
+            </PaginationItem>
+          ))
+        );
+        
+        items.push(
+          <PaginationItem key="ellipsis1">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      } else if (currentPage >= totalPages - 2) {
+        // Current page is near the end
+        items.push(
+          <PaginationItem key="ellipsis1">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+        
+        startPage = totalPages - 3;
+        endPage = totalPages - 1;
+        
+        items.push(
+          ...Array.from({ length: endPage - startPage + 1 }, (_, i) => (
+            <PaginationItem key={startPage + i}>
+              <PaginationLink 
+                isActive={currentPage === startPage + i} 
+                onClick={() => paginate(startPage + i)}
+              >
+                {startPage + i}
+              </PaginationLink>
+            </PaginationItem>
+          ))
+        );
+      } else {
+        // Current page is in the middle
+        items.push(
+          <PaginationItem key="ellipsis1">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+        
+        startPage = currentPage - 1;
+        endPage = currentPage + 1;
+        
+        items.push(
+          ...Array.from({ length: endPage - startPage + 1 }, (_, i) => (
+            <PaginationItem key={startPage + i}>
+              <PaginationLink 
+                isActive={currentPage === startPage + i} 
+                onClick={() => paginate(startPage + i)}
+              >
+                {startPage + i}
+              </PaginationLink>
+            </PaginationItem>
+          ))
+        );
+        
+        items.push(
+          <PaginationItem key="ellipsis2">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+      
+      // Always show last page
+      items.push(
+        <PaginationItem key={totalPages}>
+          <PaginationLink 
+            isActive={currentPage === totalPages} 
+            onClick={() => paginate(totalPages)}
+          >
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+    
+    return items;
+  };
   
   const handleSelectVehicle = (vehicle: VehicleData) => {
     setSelectedVehicle(vehicle);
@@ -247,20 +400,46 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
               
               {/* Results Count */}
               <p className="text-sm text-gray-500 mb-4">
-                Showing {filteredVehicles.length} of {vehicles.length} vehicles
+                Showing {currentVehicles.length} of {filteredVehicles.length} vehicles
+                {filteredVehicles.length !== vehicles.length && ` (filtered from ${vehicles.length} total)`}
               </p>
               
               {/* Vehicle Grid */}
               {filteredVehicles.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
-                  {filteredVehicles.map((vehicle) => (
-                    <VehicleCard 
-                      key={vehicle.lorry} 
-                      vehicle={vehicle} 
-                      onClick={() => handleSelectVehicle(vehicle)} 
-                    />
-                  ))}
-                </div>
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
+                    {currentVehicles.map((vehicle) => (
+                      <VehicleCard 
+                        key={vehicle.lorry} 
+                        vehicle={vehicle} 
+                        onClick={() => handleSelectVehicle(vehicle)} 
+                      />
+                    ))}
+                  </div>
+                  
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <Pagination className="mt-6">
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious
+                            onClick={() => paginate(currentPage - 1)}
+                            className={cn(currentPage === 1 && "pointer-events-none opacity-50")}
+                          />
+                        </PaginationItem>
+                        
+                        {renderPaginationItems()}
+                        
+                        <PaginationItem>
+                          <PaginationNext
+                            onClick={() => paginate(currentPage + 1)}
+                            className={cn(currentPage === totalPages && "pointer-events-none opacity-50")}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  )}
+                </>
               ) : (
                 <div className="text-center py-12 bg-white rounded-lg shadow-sm">
                   <div className="inline-block p-3 rounded-full bg-gray-100 mb-3">
@@ -329,3 +508,4 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
 };
 
 export default FleetVisualization;
+
