@@ -1,15 +1,17 @@
-var d=Object.defineProperty;var c=(i,n,e)=>n in i?d(i,n,{enumerable:!0,configurable:!0,writable:!0,value:e}):i[n]=e;var r=(i,n,e)=>c(i,typeof n!="symbol"?n+"":n,e);import{s as m,n as g,F as f}from"./assets/FleetVisualization-D5BPT73c.js";class h extends HTMLElement{constructor(){super(...arguments);r(this,"root",null);r(this,"_jsonUrl",null);r(this,"shadowContainer",null);r(this,"stylesElement",null)}static get observedAttributes(){return["data-url"]}get jsonUrl(){return this._jsonUrl}set jsonUrl(e){this._jsonUrl=e,this.render()}connectedCallback(){console.log("FleetVisualization web component connecting to DOM");const e=this.attachShadow({mode:"open"});this.shadowContainer=document.createElement("div"),this.shadowContainer.className="fleet-visualization-root",this.shadowContainer.style.width="100%",this.shadowContainer.style.height="100%",this.shadowContainer.style.fontFamily='-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',this.shadowContainer.style.fontSize="16px",this.shadowContainer.style.lineHeight="1.5",this.shadowContainer.style.color="#0f1034",this.shadowContainer.style.background="transparent",e.appendChild(this.shadowContainer),this._jsonUrl=this.getAttribute("data-url"),this.loadStyles(e),setTimeout(()=>{this.shadowContainer&&(console.log("Creating React root for FleetVisualization"),this.root=m.createRoot(this.shadowContainer),this.render())},100)}attributeChangedCallback(e,a,t){e==="data-url"&&a!==t&&(console.log("FleetVisualization data-url changed:",t),this._jsonUrl=t,this.render())}disconnectedCallback(){console.log("FleetVisualization web component disconnecting from DOM"),this.root&&(this.root.unmount(),this.root=null)}getBaseUrl(){const e=document.getElementsByTagName("script");let a="";for(let o=0;o<e.length;o++)if(e[o].src&&e[o].src.includes("fleet-visualization")){a=e[o].src;break}if(!a)return console.warn("Could not find fleet-visualization script tag. Using current origin instead."),window.location.origin;const t=new URL(a);return`${t.origin}${t.pathname.substring(0,t.pathname.lastIndexOf("/"))}`}loadStyles(e){const t=`${this.getBaseUrl()}/assets/main.css`;console.log("Loading fleet visualization styles from:",t);const o=document.createElement("link");o.rel="stylesheet",o.href=t,o.setAttribute("crossorigin","anonymous"),e.appendChild(o);const l=document.createElement("style");l.textContent=`
+var d=Object.defineProperty;var c=(i,n,e)=>n in i?d(i,n,{enumerable:!0,configurable:!0,writable:!0,value:e}):i[n]=e;var r=(i,n,e)=>c(i,typeof n!="symbol"?n+"":n,e);import{t as m,n as g,F as f}from"./assets/FleetVisualization-B2WqsvW3.js";class h extends HTMLElement{constructor(){super(...arguments);r(this,"root",null);r(this,"_jsonUrl",null);r(this,"shadowContainer",null);r(this,"stylesElement",null)}static get observedAttributes(){return["data-url"]}get jsonUrl(){return this._jsonUrl}set jsonUrl(e){this._jsonUrl=e,this.render()}connectedCallback(){console.log("FleetVisualization web component connecting to DOM");const e=this.attachShadow({mode:"open"});this.shadowContainer=document.createElement("div"),this.shadowContainer.className="fleet-visualization-root",this.shadowContainer.style.width="100%",this.shadowContainer.style.height="100%",this.shadowContainer.style.minHeight="900px",this.shadowContainer.style.fontFamily='-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',this.shadowContainer.style.fontSize="16px",this.shadowContainer.style.lineHeight="1.5",this.shadowContainer.style.color="#0f1034",this.shadowContainer.style.background="transparent",e.appendChild(this.shadowContainer),this._jsonUrl=this.getAttribute("data-url"),this.loadStyles(e),setTimeout(()=>{this.shadowContainer&&(console.log("Creating React root for FleetVisualization"),this.root=m.createRoot(this.shadowContainer),this.render())},100)}attributeChangedCallback(e,a,t){e==="data-url"&&a!==t&&(console.log("FleetVisualization data-url changed:",t),this._jsonUrl=t,this.render())}disconnectedCallback(){console.log("FleetVisualization web component disconnecting from DOM"),this.root&&(this.root.unmount(),this.root=null)}getBaseUrl(){const e=document.getElementsByTagName("script");let a="";for(let o=0;o<e.length;o++)if(e[o].src&&e[o].src.includes("fleet-visualization")){a=e[o].src;break}if(!a)return console.warn("Could not find fleet-visualization script tag. Using current origin instead."),window.location.origin;const t=new URL(a);return`${t.origin}${t.pathname.substring(0,t.pathname.lastIndexOf("/"))}`}loadStyles(e){const t=`${this.getBaseUrl()}/assets/main.css`;console.log("Loading fleet visualization styles from:",t);const o=document.createElement("link");o.rel="stylesheet",o.href=t,o.setAttribute("crossorigin","anonymous"),e.appendChild(o);const l=document.createElement("style");l.textContent=`
       :host {
         all: initial;
         display: block;
         width: 100%;
         height: 100%;
+        min-height: 900px;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       }
       
       .fleet-visualization-root {
         width: 100%;
         height: 100%;
+        min-height: 900px;
         background: transparent;
         color: #0f1034;
         font-size: 16px;
@@ -21,10 +23,16 @@ var d=Object.defineProperty;var c=(i,n,e)=>n in i?d(i,n,{enumerable:!0,configura
         box-sizing: border-box;
       }
       
+      /* Dialog/Modal styling */
+      [data-state="open"] {
+        pointer-events: auto;
+      }
+      
       /* Make sure colors match the standalone version */
       .fleet-viz-container {
         width: 100%;
         height: 100%;
+        min-height: 900px;
         margin: 0;
         padding: 0;
         background: #ecefff;
@@ -38,6 +46,7 @@ var d=Object.defineProperty;var c=(i,n,e)=>n in i?d(i,n,{enumerable:!0,configura
         padding: 1rem;
         background: #f7f9ff;
         border-radius: 0.5rem;
+        min-height: 900px;
       }
       
       /* Match color scheme with standalone version */
@@ -54,11 +63,11 @@ var d=Object.defineProperty;var c=(i,n,e)=>n in i?d(i,n,{enumerable:!0,configura
       }
       
       .text-viz-primary {
-        color: #d09974;
+        color: #9b87f5;
       }
       
       .text-viz-secondary {
-        color: #995730;
+        color: #7E69AB;
       }
       
       .text-viz-dark {
@@ -78,11 +87,11 @@ var d=Object.defineProperty;var c=(i,n,e)=>n in i?d(i,n,{enumerable:!0,configura
       }
       
       .bg-viz-primary {
-        background-color: #d09974;
+        background-color: #9b87f5;
       }
       
       .bg-viz-secondary {
-        background-color: #995730;
+        background-color: #7E69AB;
       }
       
       .bg-viz-dark {
@@ -125,6 +134,19 @@ var d=Object.defineProperty;var c=(i,n,e)=>n in i?d(i,n,{enumerable:!0,configura
       /* Fix button styling */
       button {
         font-family: inherit;
+      }
+      
+      /* Dialog styling */
+      [role="dialog"] {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       
       /* Tailwind classes - ensure common styles are available */
@@ -182,7 +204,30 @@ var d=Object.defineProperty;var c=(i,n,e)=>n in i?d(i,n,{enumerable:!0,configura
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       }
       
-      /* Add more critical Tailwind classes as needed */
+      /* Min height for grid to ensure consistent page height */
+      .min-h-\\[800px\\] {
+        min-height: 800px;
+      }
+      
+      /* Dialog backdrop styles */
+      .bg-black\\/50 {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      
+      /* Opacity for background content when modal is open */
+      .opacity-50 {
+        opacity: 0.5;
+      }
+      
+      .pointer-events-none {
+        pointer-events: none;
+      }
+      
+      .transition-opacity {
+        transition-property: opacity;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+      }
     `,e.appendChild(l),o.onload=()=>console.log("Fleet visualization styles loaded successfully from:",t),o.onerror=()=>{console.error("Failed to load fleet visualization styles from:",t),console.log("Applying fallback inline styles");const s=document.createElement("style");s.textContent=`
         /* Full Tailwind-compatible styling to ensure consistent appearance */
         .fleet-viz-container {
