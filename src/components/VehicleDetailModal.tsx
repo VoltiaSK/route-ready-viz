@@ -18,8 +18,11 @@ interface VehicleDetailModalProps {
 const VehicleDetailModal = ({ vehicle, onClose }: VehicleDetailModalProps) => {
   return (
     <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
-      <DialogOverlay className="bg-black/50" />
-      <DialogContent className="max-w-md p-0 border-none bg-transparent shadow-none" aria-describedby="vehicle-detail-description">
+      <DialogOverlay className="fixed inset-0 bg-black/50 z-40" />
+      <DialogContent 
+        className="fixed left-[50%] top-[50%] z-50 w-full max-w-md translate-x-[-50%] translate-y-[-50%] p-0 border-none bg-transparent shadow-none" 
+        aria-describedby="vehicle-detail-description"
+      >
         <VisuallyHidden>
           <DialogTitle>Vehicle Details for {vehicle.lorry}</DialogTitle>
           <DialogDescription id="vehicle-detail-description">

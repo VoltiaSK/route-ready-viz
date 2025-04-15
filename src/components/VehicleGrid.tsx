@@ -1,3 +1,4 @@
+
 import { VehicleData } from "@/types/VehicleData";
 import VehicleCard from "./VehicleCard";
 import EmptyState from "./EmptyState";
@@ -20,13 +21,18 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
   console.log(`Rendering VehicleGrid with ${vehicles.length} vehicles`);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4 min-h-[800px]">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4 min-h-[768px]">
       {vehicles.map((vehicle) => (
-        <VehicleCard 
-          key={vehicle.lorry} 
-          vehicle={vehicle} 
-          onClick={() => onSelectVehicle(vehicle)} 
-        />
+        <div 
+          key={vehicle.lorry}
+          className="cursor-pointer transform transition-transform duration-150 hover:scale-102"
+          onClick={() => onSelectVehicle(vehicle)}
+        >
+          <VehicleCard 
+            vehicle={vehicle} 
+            onClick={() => onSelectVehicle(vehicle)} 
+          />
+        </div>
       ))}
       
       {/* Placeholder cards to keep consistent grid height */}

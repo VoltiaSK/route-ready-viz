@@ -5,78 +5,60 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
   try {
     console.log(`Fetching vehicle data from: ${url}`);
     const response = await fetch(url, {
-      // Remove cache control headers that might be causing CORS issues
-      // Some headers like 'Expires' can trigger CORS preflight issues
       mode: 'cors',
-      credentials: 'omit'
+      credentials: 'omit',
+      headers: {
+        'Accept': 'application/json'
+      }
     });
     
     if (!response.ok) {
       throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
     }
     
-    const text = await response.text();
+    const data = await response.json();
     
-    try {
-      // Try to clean potential comments before parsing
-      const cleanedText = text.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+    // Handle different possible data structures
+    let vehicleData: VehicleData[] = [];
+    
+    if (Array.isArray(data)) {
+      // Direct array of vehicle data
+      console.log(`Successfully fetched ${data.length} vehicles (direct array format)`);
+      vehicleData = data as VehicleData[];
+    } else if (data.data && Array.isArray(data.data)) {
+      // Object with a 'data' property containing the array
+      console.log(`Successfully fetched ${data.data.length} vehicles (data.data format)`);
+      vehicleData = data.data as VehicleData[];
+    } else {
+      // Try to find any array in the response that looks like vehicle data
+      const possibleArrays = Object.values(data).filter(
+        (val): val is any[] => Array.isArray(val) && val.length > 0
+      );
       
-      // Parse the JSON
-      const data = JSON.parse(cleanedText);
-      
-      // Handle different possible data structures
-      let vehicleData: VehicleData[] = [];
-      
-      if (Array.isArray(data)) {
-        // Direct array of vehicle data
-        console.log(`Successfully fetched ${data.length} vehicles (direct array format)`);
-        vehicleData = data as VehicleData[];
-      } else if (data.data && Array.isArray(data.data)) {
-        // Object with a 'data' property containing the array
-        console.log(`Successfully fetched ${data.data.length} vehicles (data.data format)`);
-        vehicleData = data.data as VehicleData[];
-      } else {
-        // Try to find any array in the response that looks like vehicle data
-        const possibleArrays = Object.values(data).filter(
-          (val): val is any[] => Array.isArray(val) && val.length > 0
+      if (possibleArrays.length > 0) {
+        // Use the largest array as it's likely the vehicle data
+        const largestArray = possibleArrays.reduce((a: any[], b: any[]) => 
+          a.length > b.length ? a : b, [] as any[]
         );
-        
-        if (possibleArrays.length > 0) {
-          // Use the largest array as it's likely the vehicle data
-          const largestArray = possibleArrays.reduce((a: any[], b: any[]) => 
-            a.length > b.length ? a : b, [] as any[]
-          );
-          console.log(`Successfully fetched ${largestArray.length} vehicles (detected array format)`);
-          vehicleData = largestArray as VehicleData[];
-        } else {
-          throw new Error("Could not find vehicle data in the response");
-        }
+        console.log(`Successfully fetched ${largestArray.length} vehicles (detected array format)`);
+        vehicleData = largestArray as VehicleData[];
+      } else {
+        throw new Error("Could not find vehicle data in the response");
       }
-      
-      // Validate that the data looks like vehicle data
-      if (vehicleData.length > 0 && !vehicleData[0].lorry) {
-        throw new Error("Invalid vehicle data format: missing expected properties");
-      }
-      
-      return vehicleData;
-    } catch (parseError: any) {
-      console.error("JSON parsing error:", parseError);
-      throw new Error(`Invalid JSON format: ${parseError.message}`);
     }
+    
+    // Validate that the data looks like vehicle data
+    if (vehicleData.length > 0 && !vehicleData[0].lorry) {
+      throw new Error("Invalid vehicle data format: missing expected properties");
+    }
+    
+    return vehicleData;
   } catch (error: any) {
     console.error("Error fetching vehicle data:", error);
     // Fall back to mock data when there's a CORS or network error
     console.log("Falling back to mock data due to fetch error");
     return getMockVehicleData();
   }
-};
-
-// Generate vehicle ID (license plate)
-const generateVehicleId = (): string => {
-  const prefixes = ["7M", "8L", "9P"];
-  const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-  const randomNumber = String(Math.floor(10000 + Math.random() * 90000)).substring(0, 5);
-  return `${randomPrefix}${randomNumber}`;
 };
 
 // For development/testing with realistic data for EV adoption
@@ -90,7 +72,7 @@ export const getMockVehicleData = (): VehicleData[] => {
   
   // EV Ready vehicles (most daily routes between 60km and 240km)
   for (let i = 0; i < evReadyTarget; i++) {
-    const avgDistance = Math.floor(60 + Math.random() * 140); // 60-200km average
+    const avgDistance = Math.floor(60 + Math.random() * 180); // 60-240km average
     const minDistance = Math.floor(Math.max(10, avgDistance * 0.3 + (Math.random() * 20 - 10)));
     const maxDistance = Math.floor(avgDistance * 1.5 + Math.random() * 60);
     const medianDistance = Math.floor(avgDistance * 0.9 + Math.random() * 20);
@@ -118,8 +100,8 @@ export const getMockVehicleData = (): VehicleData[] => {
   
   // Non-EV Ready vehicles (higher mileage)
   for (let i = evReadyTarget; i < totalVehicles; i++) {
-    const avgDistance = Math.floor(180 + Math.random() * 120); // 180-300km average
-    const minDistance = Math.floor(Math.max(30, avgDistance * 0.3));
+    const avgDistance = Math.floor(230 + Math.random() * 120); // 230-350km average
+    const minDistance = Math.floor(Math.max(40, avgDistance * 0.3));
     const maxDistance = Math.floor(avgDistance * 1.8 + Math.random() * 100);
     const medianDistance = Math.floor(avgDistance * 0.95 + Math.random() * 30);
     
@@ -147,6 +129,14 @@ export const getMockVehicleData = (): VehicleData[] => {
   // Shuffle the array to mix EV ready and non-EV ready
   console.log(`Generated ${vehicles.length} mock vehicles`);
   return vehicles.sort(() => Math.random() - 0.5);
+};
+
+// Generate vehicle ID (license plate)
+const generateVehicleId = (): string => {
+  const prefixes = ["7M", "8L", "9P"];
+  const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+  const randomNumber = String(Math.floor(10000 + Math.random() * 90000)).substring(0, 5);
+  return `${randomPrefix}${randomNumber}`;
 };
 
 export const isVehicleEVReady = (vehicle: VehicleData): boolean => {
