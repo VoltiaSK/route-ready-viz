@@ -7,7 +7,6 @@ class FleetVisualizationElement extends HTMLElement {
   private root: ReactDOM.Root | null = null;
   private _jsonUrl: string | null = null;
   private shadowContainer: HTMLDivElement | null = null;
-  private stylesElement: HTMLLinkElement | null = null;
 
   static get observedAttributes() {
     return ['data-url'];
@@ -34,8 +33,8 @@ class FleetVisualizationElement extends HTMLElement {
     // Get the data-url attribute
     this._jsonUrl = this.getAttribute('data-url');
     
-    // Create styles element to inject global styles
-    this.loadStyles();
+    // Inject critical styles directly
+    this.injectBasicStyles();
     
     // Create root and render with a small delay to ensure DOM is ready
     setTimeout(() => {
@@ -62,106 +61,74 @@ class FleetVisualizationElement extends HTMLElement {
       this.root = null;
     }
     
-    if (this.stylesElement && document.head.contains(this.stylesElement)) {
-      document.head.removeChild(this.stylesElement);
+    // Remove styles if we've injected them
+    const styleElement = document.getElementById('fleet-visualization-inline-styles');
+    if (styleElement) {
+      document.head.removeChild(styleElement);
     }
   }
   
-  // Get the base URL of the script
-  private getBaseUrl() {
-    const scripts = document.getElementsByTagName('script');
-    let scriptUrl = '';
-    
-    // Find the fleet-visualization.js script
-    for (let i = 0; i < scripts.length; i++) {
-      if (scripts[i].src && scripts[i].src.includes('fleet-visualization')) {
-        scriptUrl = scripts[i].src;
-        break;
-      }
-    }
-    
-    if (!scriptUrl) {
-      console.warn('Could not find fleet-visualization script tag. Using current origin instead.');
-      return window.location.origin;
-    }
-    
-    return scriptUrl.substring(0, scriptUrl.lastIndexOf('/'));
-  }
-  
-  private loadStyles() {
-    // If there's already a style element with our ID, don't add another one
-    const existingStyle = document.getElementById('fleet-visualization-styles');
-    if (existingStyle) {
-      console.log('Fleet visualization styles already loaded');
+  // Inject critical CSS directly instead of loading external file
+  private injectBasicStyles() {
+    // Check if styles already exist
+    if (document.getElementById('fleet-visualization-inline-styles')) {
       return;
     }
     
-    this.stylesElement = document.createElement('link');
-    this.stylesElement.id = 'fleet-visualization-styles';
-    this.stylesElement.rel = 'stylesheet';
-    const baseUrl = this.getBaseUrl();
-    
-    // First try to locate the CSS file dynamically
-    this.findAndLoadCssFile(baseUrl);
-  }
-  
-  private findAndLoadCssFile(baseUrl: string) {
-    // Create an XMLHttpRequest to get the directory listing
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', `${baseUrl}/assets/`, true);
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          // Try to find a CSS file in the response
-          const cssRegex = /main-[A-Za-z0-9_-]+\.css/g;
-          const matches = xhr.responseText.match(cssRegex);
-          
-          if (matches && matches.length > 0) {
-            // Use the first matching CSS file
-            this.loadCssFile(`${baseUrl}/assets/${matches[0]}`);
-          } else {
-            // Fallback to a generic path based on known structure
-            this.loadCssFile(`${baseUrl}/assets/main.css`);
-          }
-        } else {
-          // If we can't access the directory, try default paths
-          this.loadCssFile(`${baseUrl}/assets/main.css`);
-          
-          // If the first attempt fails, try a second common pattern
-          this.stylesElement?.addEventListener('error', () => {
-            this.loadCssFile(`${baseUrl}/main.css`);
-          });
+    // Create style element
+    const styleElement = document.createElement('style');
+    styleElement.id = 'fleet-visualization-inline-styles';
+    styleElement.textContent = `
+      /* Critical styles for fleet visualization */
+      .ev-viz-container {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        color: #333;
+        background-color: #f9fafb;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+      }
+      
+      .bg-viz-background {
+        background-color: #f9fafb;
+      }
+      
+      .bg-viz-cardsBackground {
+        background-color: white;
+      }
+      
+      .text-viz-dark {
+        color: #1e293b;
+      }
+      
+      /* Responsive grid for vehicle cards */
+      .grid-cols-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+      }
+      
+      @media (min-width: 640px) {
+        .sm\\:grid-cols-2 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
       }
-    };
-    
-    // This may fail if directory listing is disabled, which is common
-    try {
-      xhr.send();
-    } catch (err) {
-      console.warn('Failed to list directory, trying default CSS paths:', err);
-      this.loadCssFile(`${baseUrl}/assets/main.css`);
-    }
-  }
-  
-  private loadCssFile(url: string) {
-    if (!this.stylesElement) return;
-    
-    this.stylesElement.href = url;
-    this.stylesElement.onload = () => console.log('Fleet visualization styles loaded successfully from:', url);
-    this.stylesElement.onerror = (err) => {
-      console.error('Failed to load fleet visualization styles:', err);
       
-      // If we're trying a specific hash version and it fails, try without the hash
-      if (url.includes('-')) {
-        const fallbackUrl = url.replace(/main-[A-Za-z0-9_-]+\.css/, 'main.css');
-        console.log('Trying fallback CSS URL:', fallbackUrl);
-        this.loadCssFile(fallbackUrl);
+      @media (min-width: 768px) {
+        .md\\:grid-cols-3 {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
       }
-    };
+      
+      @media (min-width: 1024px) {
+        .lg\\:grid-cols-4 {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+      }
+    `;
     
-    document.head.appendChild(this.stylesElement);
-    console.log('Component styles loading from:', this.stylesElement.href);
+    document.head.appendChild(styleElement);
+    console.log('Critical styles injected for fleet visualization');
   }
 
   private render() {
