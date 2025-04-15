@@ -91,14 +91,13 @@ const jsonData = generateTemplateJSON();
 // Convert to JSON string with nice formatting
 const jsonString = JSON.stringify(jsonData, null, 2);
 
-// Determine output path (could be configured)
-const outputPath = path.join(__dirname, '../../public/fleetData.json');
-
-// Write to file
-fs.writeFileSync(outputPath, jsonString, 'utf8');
-
-console.log(`Template JSON file with 150 vehicles created at: ${outputPath}`);
-console.log(`EV readiness should be approximately 92%.`);
+// Write to public folder (this is where data should be served from)
+const publicPath = path.join(__dirname, '../../public/fleetData.json');
+fs.writeFileSync(publicPath, jsonString, 'utf8');
+console.log(`Template JSON file with 150 vehicles created at: ${publicPath}`);
 
 // This file can be run with:
 // npx ts-node src/utils/generateTemplateJSON.ts
+
+// Export the function for potential reuse
+export { generateTemplateJSON };

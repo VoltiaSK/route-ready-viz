@@ -21,34 +21,29 @@ export const useFleetData = (jsonUrl?: string) => {
       try {
         let data: VehicleData[];
         
-        if (jsonUrl) {
-          try {
-            data = await fetchVehicleData(jsonUrl);
-            if (data && data.length > 0) {
-              setVehicles(data);
-              setFleetStats(getFleetEVReadiness(data));
-              setError(null);
-            } else {
-              throw new Error("No vehicle data found");
-            }
-          } catch (err) {
-            console.error("Failed to load vehicle data:", err);
-            setError(`Failed to load vehicle data. Please check your JSON URL.`);
-            
-            // Fall back to mock data
-            setUsingMockData(true);
-            const mockData = getMockVehicleData();
-            console.log("Falling back to mock data:", mockData.length, "vehicles loaded");
-            setVehicles(mockData);
-            setFleetStats(getFleetEVReadiness(mockData));
+        // Default to /fleetData.json if no URL provided
+        const dataUrl = jsonUrl || '/fleetData.json';
+        
+        try {
+          data = await fetchVehicleData(dataUrl);
+          if (data && data.length > 0) {
+            console.log(`Successfully loaded ${data.length} vehicles from ${dataUrl}`);
+            setVehicles(data);
+            setFleetStats(getFleetEVReadiness(data));
+            setError(null);
+          } else {
+            throw new Error("No vehicle data found");
           }
-        } else {
-          // Use mock data if no URL is provided
+        } catch (err) {
+          console.error("Failed to load vehicle data:", err);
+          setError(`Failed to load vehicle data. Please check your JSON URL.`);
+          
+          // Fall back to mock data
+          setUsingMockData(true);
           const mockData = getMockVehicleData();
-          console.log("Using mock data:", mockData.length, "vehicles loaded");
+          console.log("Falling back to mock data:", mockData.length, "vehicles loaded");
           setVehicles(mockData);
           setFleetStats(getFleetEVReadiness(mockData));
-          setUsingMockData(true);
         }
       } finally {
         setLoading(false);
