@@ -101,17 +101,19 @@ class FleetVisualizationElement extends HTMLElement {
     this.stylesElement.rel = 'stylesheet';
     const baseUrl = this.getBaseUrl();
     
-    // Use a fixed path for CSS - always load from assets/main.css
+    // Try to load CSS from the main assets directory first
     const cssUrl = `${baseUrl}/assets/main.css`;
+    console.log('Loading fleet visualization styles from:', cssUrl);
+    
     this.stylesElement.href = cssUrl;
     
     this.stylesElement.onload = () => console.log('Fleet visualization styles loaded successfully from:', cssUrl);
-    this.stylesElement.onerror = (err) => {
-      console.error('Failed to load fleet visualization styles:', err);
+    this.stylesElement.onerror = () => {
+      console.error('Failed to load fleet visualization styles from:', cssUrl);
+      // No fallback needed - we'll make sure the CSS is always in the correct location
     };
     
     document.head.appendChild(this.stylesElement);
-    console.log('Component styles loading from:', this.stylesElement.href);
   }
 
   private render() {

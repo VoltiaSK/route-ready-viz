@@ -29,6 +29,13 @@ export default defineConfig(({ mode }) => ({
         entryFileNames: (chunkInfo) => {
           return chunkInfo.name === 'webComponent' ? 'fleet-visualization.js' : 'assets/[name]-[hash].js';
         },
+        assetFileNames: (assetInfo) => {
+          // Force CSS to output with a consistent name
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            return 'assets/[name].[ext]';
+          }
+          return 'assets/[name]-[hash].[ext]';
+        },
       },
     },
   },
