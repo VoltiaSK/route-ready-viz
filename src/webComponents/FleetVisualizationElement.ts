@@ -7,6 +7,7 @@ class FleetVisualizationElement extends HTMLElement {
   private root: ReactDOM.Root | null = null;
   private _jsonUrl: string | null = null;
   private shadowContainer: HTMLDivElement | null = null;
+  private stylesElement: HTMLLinkElement | null = null;
 
   static get observedAttributes() {
     return ['data-url'];
@@ -34,21 +35,16 @@ class FleetVisualizationElement extends HTMLElement {
     this._jsonUrl = this.getAttribute('data-url');
     
     // Create styles element to inject global styles
-    const stylesElement = document.createElement('link');
-    stylesElement.rel = 'stylesheet';
-    stylesElement.href = `${this.getBaseUrl()}/assets/main-0TLJJYYs.css`;
-    document.head.appendChild(stylesElement);
+    this.loadStyles();
     
-    console.log('Component styles injected from:', `${this.getBaseUrl()}/assets/main-0TLJJYYs.css`);
-    
-    // Create root and render
+    // Create root and render with a small delay to ensure DOM is ready
     setTimeout(() => {
       if (this.shadowContainer) {
         console.log('Creating React root for FleetVisualization');
         this.root = ReactDOM.createRoot(this.shadowContainer);
         this.render();
       }
-    }, 0);
+    }, 100);
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -65,6 +61,10 @@ class FleetVisualizationElement extends HTMLElement {
       this.root.unmount();
       this.root = null;
     }
+    
+    if (this.stylesElement && document.head.contains(this.stylesElement)) {
+      document.head.removeChild(this.stylesElement);
+    }
   }
   
   // Get the base URL of the script
@@ -74,18 +74,38 @@ class FleetVisualizationElement extends HTMLElement {
     
     // Find the fleet-visualization.js script
     for (let i = 0; i < scripts.length; i++) {
-      if (scripts[i].src.includes('fleet-visualization.js')) {
+      if (scripts[i].src && scripts[i].src.includes('fleet-visualization')) {
         scriptUrl = scripts[i].src;
         break;
       }
     }
     
     if (!scriptUrl) {
-      console.warn('Could not find fleet-visualization.js script tag');
-      return '';
+      console.warn('Could not find fleet-visualization script tag. Using current origin instead.');
+      return window.location.origin;
     }
     
     return scriptUrl.substring(0, scriptUrl.lastIndexOf('/'));
+  }
+  
+  private loadStyles() {
+    // If there's already a style element with our ID, don't add another one
+    const existingStyle = document.getElementById('fleet-visualization-styles');
+    if (existingStyle) {
+      console.log('Fleet visualization styles already loaded');
+      return;
+    }
+    
+    this.stylesElement = document.createElement('link');
+    this.stylesElement.id = 'fleet-visualization-styles';
+    this.stylesElement.rel = 'stylesheet';
+    const baseUrl = this.getBaseUrl();
+    this.stylesElement.href = `${baseUrl}/assets/main-DPm-0b7F.css`;
+    this.stylesElement.onload = () => console.log('Fleet visualization styles loaded successfully');
+    this.stylesElement.onerror = (err) => console.error('Failed to load fleet visualization styles:', err);
+    
+    document.head.appendChild(this.stylesElement);
+    console.log('Component styles loading from:', this.stylesElement.href);
   }
 
   private render() {
