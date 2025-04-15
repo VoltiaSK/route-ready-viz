@@ -4,7 +4,15 @@ import { VehicleData, VehicleDataResponse } from "@/types/VehicleData";
 export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
   try {
     console.log(`Fetching vehicle data from: ${url}`);
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      // Add cache control headers to prevent caching issues
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    });
+    
     if (!response.ok) {
       throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
     }
@@ -12,20 +20,42 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     const text = await response.text();
     
     try {
-      // Try to clean potential comments before parsing (though comments are not valid JSON)
-      // This is just a best-effort fallback and shouldn't be relied upon
+      // Try to clean potential comments before parsing
       const cleanedText = text.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
       
-      // Make sure there are no comments in the JSON
-      const data: VehicleDataResponse = JSON.parse(cleanedText);
-      console.log(`Successfully fetched ${data.data?.length || 0} vehicles`);
+      // Parse the JSON
+      const data = JSON.parse(cleanedText);
       
-      // Validate data structure
-      if (!data.data || !Array.isArray(data.data)) {
-        throw new Error("Invalid data structure: Expected a 'data' array");
+      // Handle different possible data structures
+      let vehicleData: VehicleData[] = [];
+      
+      if (Array.isArray(data)) {
+        // Direct array of vehicle data
+        console.log(`Successfully fetched ${data.length} vehicles (direct array format)`);
+        vehicleData = data;
+      } else if (data.data && Array.isArray(data.data)) {
+        // Object with a 'data' property containing the array
+        console.log(`Successfully fetched ${data.data.length} vehicles (data.data format)`);
+        vehicleData = data.data;
+      } else {
+        // Try to find any array in the response that looks like vehicle data
+        const possibleArrays = Object.values(data).filter(val => Array.isArray(val) && val.length > 0);
+        if (possibleArrays.length > 0) {
+          // Use the largest array as it's likely the vehicle data
+          const largestArray = possibleArrays.reduce((a, b) => a.length > b.length ? a : b);
+          console.log(`Successfully fetched ${largestArray.length} vehicles (detected array format)`);
+          vehicleData = largestArray;
+        } else {
+          throw new Error("Could not find vehicle data in the response");
+        }
       }
       
-      return data.data || [];
+      // Validate that the data looks like vehicle data
+      if (vehicleData.length > 0 && !vehicleData[0].lorry) {
+        throw new Error("Invalid vehicle data format: missing expected properties");
+      }
+      
+      return vehicleData;
     } catch (parseError) {
       console.error("JSON parsing error:", parseError);
       throw new Error(`Invalid JSON format: ${parseError.message}`);
