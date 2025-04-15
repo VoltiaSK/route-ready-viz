@@ -147,7 +147,7 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
           onClose={handleCloseDetail} 
         />
       ) : (
-        <div className="p-4 md:p-6">
+        <div className="p-4 md:p-6 bg-viz-cardsBackground">
           {/* Header with Title and Stats */}
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
             <div>

@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -67,15 +66,17 @@ export default {
 					primary: '#9b87f5',
 					secondary: '#7E69AB',
 					tertiary: '#6E59A5',
-					dark: '#1A1F2C',
+					dark: '#0f1034',
 					light: '#E5DEFF',
 					accent: '#0EA5E9',
 					ready: '#0EA5E9',
 					warning: '#F97316',
 					critical: '#D946EF',
-					background: '#F1F0FB',
+					background: '#ecefff',
+					cardsBackground: '#f7f9ff',
 					highway: '#33C3F0',
-					city: '#D3E4FD'
+					city: '#D3E4FD',
+					gradient: 'linear-gradient(315deg, #d09974, #995730)'
 				}
 			},
 			borderRadius: {
