@@ -1,4 +1,3 @@
-
 import { VehicleData, VehicleDataResponse } from "@/types/VehicleData";
 
 export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
@@ -32,19 +31,24 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
       if (Array.isArray(data)) {
         // Direct array of vehicle data
         console.log(`Successfully fetched ${data.length} vehicles (direct array format)`);
-        vehicleData = data;
+        vehicleData = data as VehicleData[];
       } else if (data.data && Array.isArray(data.data)) {
         // Object with a 'data' property containing the array
         console.log(`Successfully fetched ${data.data.length} vehicles (data.data format)`);
-        vehicleData = data.data;
+        vehicleData = data.data as VehicleData[];
       } else {
         // Try to find any array in the response that looks like vehicle data
-        const possibleArrays = Object.values(data).filter(val => Array.isArray(val) && val.length > 0);
+        const possibleArrays = Object.values(data).filter(
+          (val): val is any[] => Array.isArray(val) && val.length > 0
+        );
+        
         if (possibleArrays.length > 0) {
           // Use the largest array as it's likely the vehicle data
-          const largestArray = possibleArrays.reduce((a, b) => a.length > b.length ? a : b);
+          const largestArray = possibleArrays.reduce((a, b) => 
+            a.length > b.length ? a : b, [] as any[]
+          );
           console.log(`Successfully fetched ${largestArray.length} vehicles (detected array format)`);
-          vehicleData = largestArray;
+          vehicleData = largestArray as VehicleData[];
         } else {
           throw new Error("Could not find vehicle data in the response");
         }
