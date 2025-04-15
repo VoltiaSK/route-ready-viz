@@ -1,0 +1,17 @@
+
+{
+  "data": [
+    {
+      "depot": "SK",
+      "lorry": "7M73322",
+      "average_distance": 142,
+      "minimum_distance": 28,
+      "maximum_distance": 376,
+      "median_distance": 120,
+      "min_95_perc": 30,
+      "max_95_perc": 230,
+      "average_highway_distance": 85,
+      "median_highway": 72
+    }
+  ]
+}
