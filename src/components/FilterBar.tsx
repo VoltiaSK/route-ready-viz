@@ -29,7 +29,7 @@ const FilterBar = ({
         <Input
           type="text"
           placeholder="Search by vehicle ID or depot"
-          className="pl-9 bg-white"
+          className="pl-9 bg-white shadow-sm"
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
         />
@@ -38,7 +38,7 @@ const FilterBar = ({
       <div className="relative">
         <Button
           variant="outline"
-          className="bg-white w-full sm:w-auto flex items-center justify-between px-4"
+          className="bg-white w-full sm:w-auto flex items-center justify-between px-4 shadow-sm"
           onClick={() => setShowFilterMenu(!showFilterMenu)}
         >
           <div className="flex items-center">
@@ -97,7 +97,7 @@ const FilterBar = ({
         <Button
           variant="ghost"
           size="icon"
-          className="flex items-center justify-center"
+          className="flex items-center justify-center shadow-sm"
           onClick={onClearFilters}
         >
           <FilterX size={16} />

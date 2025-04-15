@@ -11,6 +11,7 @@ import FleetHeader from "./FleetHeader";
 import FleetOverview from "./FleetOverview";
 import { useFleetData } from "@/hooks/useFleetData";
 import { useFleetFilters } from "@/hooks/useFleetFilters";
+import VehicleDetailModal from "./VehicleDetailModal";
 
 interface FleetVisualizationProps {
   jsonUrl?: string;
@@ -50,13 +51,8 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
     )}>
       {loading ? (
         <LoadingState />
-      ) : selectedVehicle ? (
-        <VehicleDetail 
-          vehicle={selectedVehicle} 
-          onClose={handleCloseDetail} 
-        />
       ) : (
-        <div className="fleet-viz-wrapper p-4 md:p-6 bg-fleet-viz-cardsBackground">
+        <div className="fleet-viz-wrapper p-4 md:p-6 bg-fleet-viz-cardsBackground relative">
           {/* Show warning banner if using mock data due to error */}
           {error && usingMockData && (
             <ErrorState error={error} showingMockData={true} />
@@ -71,9 +67,9 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
           
           {/* Main Tabs */}
           <Tabs defaultValue="fleet" className="mb-6">
-            <TabsList className="mb-4">
-              <TabsTrigger value="fleet">Fleet Overview</TabsTrigger>
-              <TabsTrigger value="analysis">Analysis</TabsTrigger>
+            <TabsList className="mb-4 bg-white shadow-sm">
+              <TabsTrigger value="fleet" className="data-[state=active]:bg-white">Fleet Overview</TabsTrigger>
+              <TabsTrigger value="analysis" className="data-[state=active]:bg-white">Analysis</TabsTrigger>
             </TabsList>
             
             <TabsContent value="fleet">
@@ -100,6 +96,14 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
               />
             </TabsContent>
           </Tabs>
+          
+          {/* Vehicle Detail Modal */}
+          {selectedVehicle && (
+            <VehicleDetailModal
+              vehicle={selectedVehicle}
+              onClose={handleCloseDetail}
+            />
+          )}
         </div>
       )}
     </div>

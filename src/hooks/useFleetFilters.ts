@@ -51,7 +51,7 @@ export const useFleetFilters = (vehicles: VehicleData[]) => {
     return filteredVehicles.slice(indexOfFirstVehicle, indexOfLastVehicle);
   }, [filteredVehicles, indexOfFirstVehicle, indexOfLastVehicle]);
   
-  const totalPages = Math.ceil(filteredVehicles.length / vehiclesPerPage);
+  const totalPages = Math.max(1, Math.ceil(filteredVehicles.length / vehiclesPerPage));
   
   // Change page
   const handlePageChange = (pageNumber: number) => {
