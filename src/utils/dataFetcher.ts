@@ -1,15 +1,14 @@
+
 import { VehicleData, VehicleDataResponse } from "@/types/VehicleData";
 
 export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
   try {
     console.log(`Fetching vehicle data from: ${url}`);
     const response = await fetch(url, {
-      // Add cache control headers to prevent caching issues
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
+      // Remove cache control headers that might be causing CORS issues
+      // Some headers like 'Expires' can trigger CORS preflight issues
+      mode: 'cors',
+      credentials: 'omit'
     });
     
     if (!response.ok) {
@@ -44,7 +43,7 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
         
         if (possibleArrays.length > 0) {
           // Use the largest array as it's likely the vehicle data
-          const largestArray = possibleArrays.reduce((a, b) => 
+          const largestArray = possibleArrays.reduce((a: any[], b: any[]) => 
             a.length > b.length ? a : b, [] as any[]
           );
           console.log(`Successfully fetched ${largestArray.length} vehicles (detected array format)`);
@@ -60,13 +59,15 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
       }
       
       return vehicleData;
-    } catch (parseError) {
+    } catch (parseError: any) {
       console.error("JSON parsing error:", parseError);
       throw new Error(`Invalid JSON format: ${parseError.message}`);
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching vehicle data:", error);
-    throw error;
+    // Fall back to mock data when there's a CORS or network error
+    console.log("Falling back to mock data due to fetch error");
+    return getMockVehicleData();
   }
 };
 

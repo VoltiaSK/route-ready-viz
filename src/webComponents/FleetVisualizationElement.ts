@@ -33,6 +33,7 @@ class FleetVisualizationElement extends HTMLElement {
     this.shadowContainer.className = 'fleet-visualization-root';
     this.shadowContainer.style.width = '100%';
     this.shadowContainer.style.height = '100%';
+    this.shadowContainer.style.minHeight = '900px'; // Set minimum height
     
     // Apply base styles to ensure consistent appearance
     this.shadowContainer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif';
@@ -121,12 +122,14 @@ class FleetVisualizationElement extends HTMLElement {
         display: block;
         width: 100%;
         height: 100%;
+        min-height: 900px;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       }
       
       .fleet-visualization-root {
         width: 100%;
         height: 100%;
+        min-height: 900px;
         background: transparent;
         color: #0f1034;
         font-size: 16px;
@@ -138,10 +141,16 @@ class FleetVisualizationElement extends HTMLElement {
         box-sizing: border-box;
       }
       
+      /* Dialog/Modal styling */
+      [data-state="open"] {
+        pointer-events: auto;
+      }
+      
       /* Make sure colors match the standalone version */
       .fleet-viz-container {
         width: 100%;
         height: 100%;
+        min-height: 900px;
         margin: 0;
         padding: 0;
         background: #ecefff;
@@ -155,6 +164,7 @@ class FleetVisualizationElement extends HTMLElement {
         padding: 1rem;
         background: #f7f9ff;
         border-radius: 0.5rem;
+        min-height: 900px;
       }
       
       /* Match color scheme with standalone version */
@@ -171,11 +181,11 @@ class FleetVisualizationElement extends HTMLElement {
       }
       
       .text-viz-primary {
-        color: #d09974;
+        color: #9b87f5;
       }
       
       .text-viz-secondary {
-        color: #995730;
+        color: #7E69AB;
       }
       
       .text-viz-dark {
@@ -195,11 +205,11 @@ class FleetVisualizationElement extends HTMLElement {
       }
       
       .bg-viz-primary {
-        background-color: #d09974;
+        background-color: #9b87f5;
       }
       
       .bg-viz-secondary {
-        background-color: #995730;
+        background-color: #7E69AB;
       }
       
       .bg-viz-dark {
@@ -242,6 +252,19 @@ class FleetVisualizationElement extends HTMLElement {
       /* Fix button styling */
       button {
         font-family: inherit;
+      }
+      
+      /* Dialog styling */
+      [role="dialog"] {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       
       /* Tailwind classes - ensure common styles are available */
@@ -299,7 +322,30 @@ class FleetVisualizationElement extends HTMLElement {
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       }
       
-      /* Add more critical Tailwind classes as needed */
+      /* Min height for grid to ensure consistent page height */
+      .min-h-\\[800px\\] {
+        min-height: 800px;
+      }
+      
+      /* Dialog backdrop styles */
+      .bg-black\\/50 {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      
+      /* Opacity for background content when modal is open */
+      .opacity-50 {
+        opacity: 0.5;
+      }
+      
+      .pointer-events-none {
+        pointer-events: none;
+      }
+      
+      .transition-opacity {
+        transition-property: opacity;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+      }
     `;
     shadow.appendChild(baseStyle);
     

@@ -10,7 +10,7 @@ export const useFleetFilters = (vehicles: VehicleData[]) => {
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const vehiclesPerPage = 24; // Show 24 vehicles per page
+  const vehiclesPerPage = 12; // Show 12 vehicles per page (changed from 24)
   
   // Apply filters and search whenever the dependencies change
   useEffect(() => {

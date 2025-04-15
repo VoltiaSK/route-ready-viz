@@ -46,13 +46,13 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
   // For better embedding, we'll ensure the component doesn't overflow its container
   return (
     <div className={cn(
-      "fleet-viz-container font-sans bg-fleet-viz-background rounded-lg overflow-hidden shadow-sm",
+      "fleet-viz-container font-sans bg-fleet-viz-background rounded-lg overflow-hidden shadow-sm h-full w-full",
       className
     )}>
       {loading ? (
         <LoadingState />
       ) : (
-        <div className="fleet-viz-wrapper p-4 md:p-6 bg-fleet-viz-cardsBackground relative">
+        <div className="fleet-viz-wrapper p-4 md:p-6 bg-fleet-viz-cardsBackground relative min-h-[900px]">
           {/* Show warning banner if using mock data due to error */}
           {error && usingMockData && (
             <ErrorState error={error} showingMockData={true} />
@@ -67,12 +67,15 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
           
           {/* Main Tabs */}
           <Tabs defaultValue="fleet" className="mb-6">
-            <TabsList className="mb-4 bg-white shadow-sm">
-              <TabsTrigger value="fleet" className="data-[state=active]:bg-white">Fleet Overview</TabsTrigger>
-              <TabsTrigger value="analysis" className="data-[state=active]:bg-white">Analysis</TabsTrigger>
+            <TabsList className="mb-4 bg-white shadow-sm w-full">
+              <TabsTrigger value="fleet" className="data-[state=active]:bg-white flex-1">Fleet Overview</TabsTrigger>
+              <TabsTrigger value="analysis" className="data-[state=active]:bg-white flex-1">Analysis</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="fleet">
+            <TabsContent value="fleet" className={cn(
+              "min-h-[800px]",
+              selectedVehicle ? "opacity-50 pointer-events-none transition-opacity" : ""
+            )}>
               <FleetOverview
                 currentVehicles={currentVehicles}
                 filteredVehicles={filteredVehicles}
@@ -89,7 +92,10 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
               />
             </TabsContent>
             
-            <TabsContent value="analysis">
+            <TabsContent value="analysis" className={cn(
+              "min-h-[800px]",
+              selectedVehicle ? "opacity-50 pointer-events-none transition-opacity" : ""
+            )}>
               <FleetAnalysis 
                 vehicles={vehicles} 
                 fleetStats={fleetStats} 
