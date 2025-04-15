@@ -26,6 +26,7 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterBy, setFilterBy] = useState<"all" | "ev-ready" | "not-ready">("all");
+  const [usingMockData, setUsingMockData] = useState(false);
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,37 +43,41 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
+      setUsingMockData(false);
       try {
         let data: VehicleData[];
         
         if (jsonUrl) {
-          data = await fetchVehicleData(jsonUrl);
+          try {
+            data = await fetchVehicleData(jsonUrl);
+            if (data && data.length > 0) {
+              setVehicles(data);
+              setFilteredVehicles(data);
+              setFleetStats(getFleetEVReadiness(data));
+              setError(null);
+            } else {
+              throw new Error("No vehicle data found");
+            }
+          } catch (err) {
+            console.error("Failed to load vehicle data:", err);
+            setError(`Failed to load vehicle data. Please check your JSON URL.`);
+            
+            // Fall back to mock data
+            setUsingMockData(true);
+            const mockData = getMockVehicleData();
+            console.log("Falling back to mock data:", mockData.length, "vehicles loaded");
+            setVehicles(mockData);
+            setFilteredVehicles(mockData);
+            setFleetStats(getFleetEVReadiness(mockData));
+          }
         } else {
           // Use mock data if no URL is provided
-          data = getMockVehicleData();
-          console.log("Using mock data:", data.length, "vehicles loaded");
-        }
-        
-        if (data && data.length > 0) {
-          setVehicles(data);
-          setFilteredVehicles(data);
-          setFleetStats(getFleetEVReadiness(data));
-          setError(null);
-        } else {
-          throw new Error("No vehicle data found");
-        }
-      } catch (err) {
-        console.error("Failed to load vehicle data:", err);
-        setError("Failed to load vehicle data. Please check your JSON URL.");
-        
-        // Fall back to mock data
-        const mockData = getMockVehicleData();
-        console.log("Falling back to mock data:", mockData.length, "vehicles loaded");
-        
-        if (mockData && mockData.length > 0) {
+          const mockData = getMockVehicleData();
+          console.log("Using mock data:", mockData.length, "vehicles loaded");
           setVehicles(mockData);
           setFilteredVehicles(mockData);
           setFleetStats(getFleetEVReadiness(mockData));
+          setUsingMockData(true);
         }
       } finally {
         setLoading(false);
@@ -149,8 +154,6 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
     )}>
       {loading ? (
         <LoadingState />
-      ) : error ? (
-        <ErrorState error={error} />
       ) : selectedVehicle ? (
         <VehicleDetail 
           vehicle={selectedVehicle} 
@@ -158,6 +161,11 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
         />
       ) : (
         <div className="fleet-viz-wrapper p-4 md:p-6 bg-fleet-viz-cardsBackground">
+          {/* Show warning banner if using mock data due to error */}
+          {error && usingMockData && (
+            <ErrorState error={error} showingMockData={true} />
+          )}
+          
           {/* Header with Title and Stats */}
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
             <div>

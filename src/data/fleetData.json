@@ -1,8 +1,6 @@
 
 {
   "data": [
-    // First, let's create vehicles that are EV ready (92% of 150 = 138 vehicles)
-    // These will have max_95_perc <= 250 km
     {"depot":"SK","lorry":"7M73322","average_distance":142,"minimum_distance":28,"maximum_distance":376,"median_distance":120,"min_95_perc":30,"max_95_perc":230,"average_highway_distance":85,"median_highway":72},
     {"depot":"SK","lorry":"8L65201","average_distance":95,"minimum_distance":15,"maximum_distance":220,"median_distance":87,"min_95_perc":25,"max_95_perc":180,"average_highway_distance":52,"median_highway":48},
     {"depot":"CZ","lorry":"9P87435","average_distance":167,"minimum_distance":32,"maximum_distance":410,"median_distance":153,"min_95_perc":35,"max_95_perc":245,"average_highway_distance":98,"median_highway":88},
@@ -121,9 +119,6 @@
     {"depot":"CZ","lorry":"8L99001","average_distance":152,"minimum_distance":30,"maximum_distance":360,"median_distance":142,"min_95_perc":33,"max_95_perc":232,"average_highway_distance":91,"median_highway":85},
     {"depot":"SK","lorry":"9P22334","average_distance":138,"minimum_distance":28,"maximum_distance":330,"median_distance":128,"min_95_perc":30,"max_95_perc":225,"average_highway_distance":83,"median_highway":77},
     {"depot":"CZ","lorry":"7M55667","average_distance":166,"minimum_distance":33,"maximum_distance":395,"median_distance":156,"min_95_perc":37,"max_95_perc":240,"average_highway_distance":100,"median_highway":93},
-    
-    // Now, let's create vehicles that are NOT EV ready (8% of 150 = 12 vehicles)
-    // These will have max_95_perc > 250 km
     {"depot":"SK","lorry":"8L88990","average_distance":258,"minimum_distance":52,"maximum_distance":550,"median_distance":240,"min_95_perc":65,"max_95_perc":320,"average_highway_distance":155,"median_highway":145},
     {"depot":"CZ","lorry":"9P11223","average_distance":272,"minimum_distance":55,"maximum_distance":580,"median_distance":260,"min_95_perc":70,"max_95_perc":340,"average_highway_distance":163,"median_highway":152},
     {"depot":"SK","lorry":"7M44556","average_distance":265,"minimum_distance":53,"maximum_distance":565,"median_distance":250,"min_95_perc":68,"max_95_perc":330,"average_highway_distance":159,"median_highway":148},

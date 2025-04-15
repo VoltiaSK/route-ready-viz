@@ -8,9 +8,17 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     if (!response.ok) {
       throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
     }
-    const data: VehicleDataResponse = await response.json();
-    console.log(`Successfully fetched ${data.data?.length || 0} vehicles`);
-    return data.data || [];
+    
+    const text = await response.text();
+    
+    try {
+      const data: VehicleDataResponse = JSON.parse(text);
+      console.log(`Successfully fetched ${data.data?.length || 0} vehicles`);
+      return data.data || [];
+    } catch (parseError) {
+      console.error("JSON parsing error:", parseError);
+      throw new Error(`Invalid JSON format: ${parseError.message}`);
+    }
   } catch (error) {
     console.error("Error fetching vehicle data:", error);
     throw error;
