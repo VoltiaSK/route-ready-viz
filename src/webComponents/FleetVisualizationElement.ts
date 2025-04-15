@@ -100,9 +100,65 @@ class FleetVisualizationElement extends HTMLElement {
     this.stylesElement.id = 'fleet-visualization-styles';
     this.stylesElement.rel = 'stylesheet';
     const baseUrl = this.getBaseUrl();
-    this.stylesElement.href = `${baseUrl}/assets/main-DPm-0b7F.css`;
-    this.stylesElement.onload = () => console.log('Fleet visualization styles loaded successfully');
-    this.stylesElement.onerror = (err) => console.error('Failed to load fleet visualization styles:', err);
+    
+    // First try to locate the CSS file dynamically
+    this.findAndLoadCssFile(baseUrl);
+  }
+  
+  private findAndLoadCssFile(baseUrl: string) {
+    // Create an XMLHttpRequest to get the directory listing
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `${baseUrl}/assets/`, true);
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          // Try to find a CSS file in the response
+          const cssRegex = /main-[A-Za-z0-9_-]+\.css/g;
+          const matches = xhr.responseText.match(cssRegex);
+          
+          if (matches && matches.length > 0) {
+            // Use the first matching CSS file
+            this.loadCssFile(`${baseUrl}/assets/${matches[0]}`);
+          } else {
+            // Fallback to a generic path based on known structure
+            this.loadCssFile(`${baseUrl}/assets/main.css`);
+          }
+        } else {
+          // If we can't access the directory, try default paths
+          this.loadCssFile(`${baseUrl}/assets/main.css`);
+          
+          // If the first attempt fails, try a second common pattern
+          this.stylesElement?.addEventListener('error', () => {
+            this.loadCssFile(`${baseUrl}/main.css`);
+          });
+        }
+      }
+    };
+    
+    // This may fail if directory listing is disabled, which is common
+    try {
+      xhr.send();
+    } catch (err) {
+      console.warn('Failed to list directory, trying default CSS paths:', err);
+      this.loadCssFile(`${baseUrl}/assets/main.css`);
+    }
+  }
+  
+  private loadCssFile(url: string) {
+    if (!this.stylesElement) return;
+    
+    this.stylesElement.href = url;
+    this.stylesElement.onload = () => console.log('Fleet visualization styles loaded successfully from:', url);
+    this.stylesElement.onerror = (err) => {
+      console.error('Failed to load fleet visualization styles:', err);
+      
+      // If we're trying a specific hash version and it fails, try without the hash
+      if (url.includes('-')) {
+        const fallbackUrl = url.replace(/main-[A-Za-z0-9_-]+\.css/, 'main.css');
+        console.log('Trying fallback CSS URL:', fallbackUrl);
+        this.loadCssFile(fallbackUrl);
+      }
+    };
     
     document.head.appendChild(this.stylesElement);
     console.log('Component styles loading from:', this.stylesElement.href);
