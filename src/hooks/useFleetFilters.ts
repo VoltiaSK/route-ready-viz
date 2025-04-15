@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { VehicleData } from "@/types/VehicleData";
 import { isVehicleEVReady } from "@/utils/dataFetcher";
 
@@ -10,10 +10,11 @@ export const useFleetFilters = (vehicles: VehicleData[]) => {
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const vehiclesPerPage = 24;
+  const vehiclesPerPage = 24; // Show 24 vehicles per page
   
-  // Apply filters and search
+  // Apply filters and search whenever the dependencies change
   useEffect(() => {
+    console.log(`Applying filters: ${filterBy}, search: "${searchTerm}", total vehicles: ${vehicles.length}`);
     let result = [...vehicles];
     
     // Apply EV readiness filter
@@ -33,7 +34,9 @@ export const useFleetFilters = (vehicles: VehicleData[]) => {
       );
     }
     
+    console.log(`Filtered to ${result.length} vehicles`);
     setFilteredVehicles(result);
+    
     // Reset to first page when filters change
     setCurrentPage(1);
   }, [vehicles, filterBy, searchTerm]);
@@ -41,12 +44,19 @@ export const useFleetFilters = (vehicles: VehicleData[]) => {
   // Calculate pagination values
   const indexOfLastVehicle = currentPage * vehiclesPerPage;
   const indexOfFirstVehicle = indexOfLastVehicle - vehiclesPerPage;
-  const currentVehicles = filteredVehicles.slice(indexOfFirstVehicle, indexOfLastVehicle);
+  
+  // Use useMemo to avoid recalculating currentVehicles on every render
+  const currentVehicles = useMemo(() => {
+    console.log(`Slicing vehicles from ${indexOfFirstVehicle} to ${indexOfLastVehicle}, out of ${filteredVehicles.length}`);
+    return filteredVehicles.slice(indexOfFirstVehicle, indexOfLastVehicle);
+  }, [filteredVehicles, indexOfFirstVehicle, indexOfLastVehicle]);
+  
   const totalPages = Math.ceil(filteredVehicles.length / vehiclesPerPage);
   
   // Change page
   const handlePageChange = (pageNumber: number) => {
     if (pageNumber < 1 || pageNumber > totalPages) return;
+    console.log(`Changing to page ${pageNumber} of ${totalPages}`);
     setCurrentPage(pageNumber);
   };
 

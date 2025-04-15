@@ -9,6 +9,8 @@ interface FleetHeaderProps {
 }
 
 const FleetHeader = ({ evReadyCount, evReadyPercentage, totalVehicles }: FleetHeaderProps) => {
+  console.log(`FleetHeader: ${evReadyCount}/${totalVehicles} vehicles ready (${evReadyPercentage}%)`);
+  
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
       <div>

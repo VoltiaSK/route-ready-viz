@@ -9,9 +9,11 @@ interface VehicleGridProps {
 }
 
 const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
-  if (vehicles.length === 0) {
+  if (!vehicles || vehicles.length === 0) {
     return <EmptyState />;
   }
+
+  console.log(`Rendering VehicleGrid with ${vehicles.length} vehicles`);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">

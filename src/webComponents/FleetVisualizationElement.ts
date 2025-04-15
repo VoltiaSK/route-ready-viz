@@ -93,10 +93,13 @@ class FleetVisualizationElement extends HTMLElement {
       return window.location.origin;
     }
     
-    return scriptUrl.substring(0, scriptUrl.lastIndexOf('/'));
+    // Extract directory path from script URL
+    const url = new URL(scriptUrl);
+    return `${url.origin}${url.pathname.substring(0, url.pathname.lastIndexOf('/'))}`;
   }
   
   private loadStyles(shadow: ShadowRoot) {
+    // Get base URL for loading assets
     const baseUrl = this.getBaseUrl();
     const cssUrl = `${baseUrl}/assets/main.css`;
     console.log('Loading fleet visualization styles from:', cssUrl);
@@ -105,6 +108,7 @@ class FleetVisualizationElement extends HTMLElement {
     const style = document.createElement('link');
     style.rel = 'stylesheet';
     style.href = cssUrl;
+    style.setAttribute('crossorigin', 'anonymous');
     
     // Add to shadow DOM
     shadow.appendChild(style);
@@ -239,12 +243,70 @@ class FleetVisualizationElement extends HTMLElement {
       button {
         font-family: inherit;
       }
+      
+      /* Tailwind classes - ensure common styles are available */
+      .grid {
+        display: grid;
+      }
+      
+      .grid-cols-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+      }
+      
+      @media (min-width: 640px) {
+        .sm\\:grid-cols-2 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      
+      @media (min-width: 768px) {
+        .md\\:grid-cols-3 {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+      
+      @media (min-width: 1024px) {
+        .lg\\:grid-cols-4 {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+      }
+      
+      .gap-4 {
+        gap: 1rem;
+      }
+      
+      .mb-4 {
+        margin-bottom: 1rem;
+      }
+      
+      .mb-6 {
+        margin-bottom: 1.5rem;
+      }
+      
+      .p-4 {
+        padding: 1rem;
+      }
+      
+      .md\\:p-6 {
+        padding: 1.5rem;
+      }
+      
+      .rounded-lg {
+        border-radius: 0.5rem;
+      }
+      
+      .shadow-sm {
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      }
+      
+      /* Add more critical Tailwind classes as needed */
     `;
     shadow.appendChild(baseStyle);
     
     style.onload = () => console.log('Fleet visualization styles loaded successfully from:', cssUrl);
     style.onerror = () => {
       console.error('Failed to load fleet visualization styles from:', cssUrl);
+      console.log('Applying fallback inline styles');
       // Add a fallback inline style with all necessary styles
       const fallbackStyle = document.createElement('style');
       fallbackStyle.textContent = `
@@ -351,6 +413,37 @@ class FleetVisualizationElement extends HTMLElement {
         
         .mb-4 {
           margin-bottom: 1rem;
+        }
+        
+        /* Grid styles for vehicle layout */
+        .grid {
+          display: grid;
+        }
+        
+        .grid-cols-1 {
+          grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+        
+        @media (min-width: 640px) {
+          .sm\\:grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+        
+        @media (min-width: 768px) {
+          .md\\:grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+        }
+        
+        @media (min-width: 1024px) {
+          .lg\\:grid-cols-4 {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+          }
+        }
+        
+        .gap-4 {
+          gap: 1rem;
         }
       `;
       shadow.appendChild(fallbackStyle);
