@@ -101,7 +101,7 @@ class FleetVisualizationElement extends HTMLElement {
     // Add to shadow DOM
     shadow.appendChild(style);
     
-    // Also add a base style to ensure proper isolation
+    // Also add a base style to ensure proper isolation and consistent presentation
     const baseStyle = document.createElement('style');
     baseStyle.textContent = `
       :host {
@@ -118,6 +118,29 @@ class FleetVisualizationElement extends HTMLElement {
         background: #ffffff;
         color: #000000;
         font-size: 16px;
+        box-sizing: border-box;
+      }
+      
+      .fleet-visualization-root * {
+        box-sizing: border-box;
+      }
+      
+      /* Ensure spacing consistency */
+      .fleet-viz-container {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background: #ecefff;
+        color: #0f1034;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      }
+      
+      /* Override any host page styles */
+      .fleet-viz-wrapper {
+        padding: 1rem;
+        background: #ffffff;
+        border-radius: 0.5rem;
       }
     `;
     shadow.appendChild(baseStyle);
@@ -151,7 +174,8 @@ class FleetVisualizationElement extends HTMLElement {
     
     this.root.render(
       React.createElement(FleetVisualization, {
-        jsonUrl: this._jsonUrl || undefined
+        jsonUrl: this._jsonUrl || undefined,
+        className: "embedded-fleet-viz" // Add a class to help with any specific embedded styling
       })
     );
   }

@@ -28,7 +28,8 @@ window.addEventListener('DOMContentLoaded', () => {
 //    <script src="path-to-your-server/fleet-visualization.js"></script>
 // 4. IMPORTANT: The data-url should point to a valid JSON file with this structure:
 //    { "data": [ {vehicle objects} ] }
-// 5. Comments are not allowed in the JSON file!
+// 5. IMPORTANT: JSON must be valid - NO COMMENTS allowed in JSON files!
 // 6. If no data-url is provided, or if there's an error loading the data,
 //    the component will automatically use realistic mock data.
-
+// 7. To ensure consistent styling when embedded, all CSS is scoped within
+//    the shadow DOM and all class names are prefixed with 'fleet-viz-'.

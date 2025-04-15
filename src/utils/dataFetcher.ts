@@ -12,6 +12,7 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     const text = await response.text();
     
     try {
+      // Make sure there are no comments in the JSON
       const data: VehicleDataResponse = JSON.parse(text);
       console.log(`Successfully fetched ${data.data?.length || 0} vehicles`);
       return data.data || [];
