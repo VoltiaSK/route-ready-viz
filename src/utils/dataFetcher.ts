@@ -12,9 +12,19 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     const text = await response.text();
     
     try {
+      // Try to clean potential comments before parsing (though comments are not valid JSON)
+      // This is just a best-effort fallback and shouldn't be relied upon
+      const cleanedText = text.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+      
       // Make sure there are no comments in the JSON
-      const data: VehicleDataResponse = JSON.parse(text);
+      const data: VehicleDataResponse = JSON.parse(cleanedText);
       console.log(`Successfully fetched ${data.data?.length || 0} vehicles`);
+      
+      // Validate data structure
+      if (!data.data || !Array.isArray(data.data)) {
+        throw new Error("Invalid data structure: Expected a 'data' array");
+      }
+      
       return data.data || [];
     } catch (parseError) {
       console.error("JSON parsing error:", parseError);

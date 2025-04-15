@@ -33,6 +33,14 @@ class FleetVisualizationElement extends HTMLElement {
     this.shadowContainer.className = 'fleet-visualization-root';
     this.shadowContainer.style.width = '100%';
     this.shadowContainer.style.height = '100%';
+    
+    // Apply base styles to ensure consistent appearance
+    this.shadowContainer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif';
+    this.shadowContainer.style.fontSize = '16px';
+    this.shadowContainer.style.lineHeight = '1.5';
+    this.shadowContainer.style.color = '#0f1034';
+    this.shadowContainer.style.background = 'transparent';
+    
     shadow.appendChild(this.shadowContainer);
     
     // Get the data-url attribute
@@ -101,7 +109,7 @@ class FleetVisualizationElement extends HTMLElement {
     // Add to shadow DOM
     shadow.appendChild(style);
     
-    // Also add a base style to ensure proper isolation and consistent presentation
+    // Add critical styles to ensure proper appearance
     const baseStyle = document.createElement('style');
     baseStyle.textContent = `
       :host {
@@ -115,9 +123,10 @@ class FleetVisualizationElement extends HTMLElement {
       .fleet-visualization-root {
         width: 100%;
         height: 100%;
-        background: #ffffff;
-        color: #000000;
+        background: transparent;
+        color: #0f1034;
         font-size: 16px;
+        line-height: 1.5;
         box-sizing: border-box;
       }
       
@@ -125,7 +134,7 @@ class FleetVisualizationElement extends HTMLElement {
         box-sizing: border-box;
       }
       
-      /* Ensure spacing consistency */
+      /* Make sure colors match the standalone version */
       .fleet-viz-container {
         width: 100%;
         height: 100%;
@@ -134,13 +143,101 @@ class FleetVisualizationElement extends HTMLElement {
         background: #ecefff;
         color: #0f1034;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        border-radius: 0.5rem;
+        overflow: hidden;
       }
       
-      /* Override any host page styles */
       .fleet-viz-wrapper {
         padding: 1rem;
-        background: #ffffff;
+        background: #f7f9ff;
         border-radius: 0.5rem;
+      }
+      
+      /* Match color scheme with standalone version */
+      .text-viz-ready {
+        color: #17B26A;
+      }
+      
+      .text-viz-warning {
+        color: #F97316;
+      }
+      
+      .text-viz-critical {
+        color: #D82C2C;
+      }
+      
+      .text-viz-primary {
+        color: #d09974;
+      }
+      
+      .text-viz-secondary {
+        color: #995730;
+      }
+      
+      .text-viz-dark {
+        color: #0f1034;
+      }
+      
+      .bg-viz-ready {
+        background-color: #17B26A;
+      }
+      
+      .bg-viz-warning {
+        background-color: #F97316;
+      }
+      
+      .bg-viz-critical {
+        background-color: #D82C2C;
+      }
+      
+      .bg-viz-primary {
+        background-color: #d09974;
+      }
+      
+      .bg-viz-secondary {
+        background-color: #995730;
+      }
+      
+      .bg-viz-dark {
+        background-color: #0f1034;
+      }
+      
+      .bg-viz-light {
+        background-color: #E5DEFF;
+      }
+      
+      .bg-fleet-viz-background {
+        background-color: #ecefff;
+      }
+      
+      .bg-fleet-viz-cardsBackground {
+        background-color: #f7f9ff;
+      }
+      
+      /* Fix for cards */
+      .bg-white {
+        background-color: #ffffff;
+      }
+      
+      /* Fix for driving profile */
+      .bg-viz-highway {
+        background-color: #0f1034;
+      }
+      
+      .bg-viz-city {
+        background-color: #f7f9ff;
+      }
+      
+      /* Tabs styling fixes */
+      [data-state="active"][data-orientation="horizontal"] {
+        border-bottom-color: #0f1034;
+        color: #0f1034;
+        font-weight: 600;
+      }
+      
+      /* Fix button styling */
+      button {
+        font-family: inherit;
       }
     `;
     shadow.appendChild(baseStyle);
@@ -148,16 +245,112 @@ class FleetVisualizationElement extends HTMLElement {
     style.onload = () => console.log('Fleet visualization styles loaded successfully from:', cssUrl);
     style.onerror = () => {
       console.error('Failed to load fleet visualization styles from:', cssUrl);
-      // Add a fallback inline style
+      // Add a fallback inline style with all necessary styles
       const fallbackStyle = document.createElement('style');
       fallbackStyle.textContent = `
-        /* Minimal required styles */
+        /* Full Tailwind-compatible styling to ensure consistent appearance */
         .fleet-viz-container {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
           background-color: #ecefff;
           color: #0f1034;
-          padding: 1rem;
           border-radius: 0.5rem;
+          overflow: hidden;
+        }
+        
+        .fleet-viz-wrapper {
+          padding: 1rem;
+          background-color: #f7f9ff;
+          border-radius: 0.5rem;
+        }
+        
+        /* Add all other necessary styling to match the standalone version */
+        .bg-white {
+          background-color: #ffffff;
+        }
+        
+        .rounded-lg {
+          border-radius: 0.5rem;
+        }
+        
+        .shadow-sm {
+          box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        
+        .shadow-md {
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .text-sm {
+          font-size: 0.875rem;
+          line-height: 1.25rem;
+        }
+        
+        .text-xs {
+          font-size: 0.75rem;
+          line-height: 1rem;
+        }
+        
+        .text-lg {
+          font-size: 1.125rem;
+          line-height: 1.75rem;
+        }
+        
+        .text-xl {
+          font-size: 1.25rem;
+          line-height: 1.75rem;
+        }
+        
+        .text-2xl {
+          font-size: 1.5rem;
+          line-height: 2rem;
+        }
+        
+        .font-bold {
+          font-weight: 700;
+        }
+        
+        .font-medium {
+          font-weight: 500;
+        }
+        
+        .p-4 {
+          padding: 1rem;
+        }
+        
+        .p-6 {
+          padding: 1.5rem;
+        }
+        
+        .px-4 {
+          padding-left: 1rem;
+          padding-right: 1rem;
+        }
+        
+        .py-2 {
+          padding-top: 0.5rem;
+          padding-bottom: 0.5rem;
+        }
+        
+        .m-4 {
+          margin: 1rem;
+        }
+        
+        .my-4 {
+          margin-top: 1rem;
+          margin-bottom: 1rem;
+        }
+        
+        .mx-4 {
+          margin-left: 1rem;
+          margin-right: 1rem;
+        }
+        
+        .mt-4 {
+          margin-top: 1rem;
+        }
+        
+        .mb-4 {
+          margin-bottom: 1rem;
         }
       `;
       shadow.appendChild(fallbackStyle);
@@ -175,7 +368,7 @@ class FleetVisualizationElement extends HTMLElement {
     this.root.render(
       React.createElement(FleetVisualization, {
         jsonUrl: this._jsonUrl || undefined,
-        className: "embedded-fleet-viz" // Add a class to help with any specific embedded styling
+        className: "embedded-fleet-viz" // Add a class to help with specific embedded styling
       })
     );
   }
