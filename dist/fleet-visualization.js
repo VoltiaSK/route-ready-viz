@@ -1,4 +1,4 @@
-var d=Object.defineProperty;var c=(o,n,e)=>n in o?d(o,n,{enumerable:!0,configurable:!0,writable:!0,value:e}):o[n]=e;var r=(o,n,e)=>c(o,typeof n!="symbol"?n+"":n,e);import{q as g,n as f,F as m}from"./assets/FleetVisualization-BQFQKzhc.js";class h extends HTMLElement{constructor(){super(...arguments);r(this,"root",null);r(this,"_jsonUrl",null);r(this,"shadowContainer",null);r(this,"stylesElement",null)}static get observedAttributes(){return["data-url"]}get jsonUrl(){return this._jsonUrl}set jsonUrl(e){this._jsonUrl=e,this.render()}connectedCallback(){console.log("FleetVisualization web component connecting to DOM");const e=this.attachShadow({mode:"open"});this.shadowContainer=document.createElement("div"),this.shadowContainer.className="fleet-visualization-root",this.shadowContainer.style.width="100%",this.shadowContainer.style.height="100%",this.shadowContainer.style.fontFamily='-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',this.shadowContainer.style.fontSize="16px",this.shadowContainer.style.lineHeight="1.5",this.shadowContainer.style.color="#0f1034",this.shadowContainer.style.background="transparent",e.appendChild(this.shadowContainer),this._jsonUrl=this.getAttribute("data-url"),this.loadStyles(e),setTimeout(()=>{this.shadowContainer&&(console.log("Creating React root for FleetVisualization"),this.root=g.createRoot(this.shadowContainer),this.render())},100)}attributeChangedCallback(e,i,t){e==="data-url"&&i!==t&&(console.log("FleetVisualization data-url changed:",t),this._jsonUrl=t,this.render())}disconnectedCallback(){console.log("FleetVisualization web component disconnecting from DOM"),this.root&&(this.root.unmount(),this.root=null)}getBaseUrl(){const e=document.getElementsByTagName("script");let i="";for(let t=0;t<e.length;t++)if(e[t].src&&e[t].src.includes("fleet-visualization")){i=e[t].src;break}return i?i.substring(0,i.lastIndexOf("/")):(console.warn("Could not find fleet-visualization script tag. Using current origin instead."),window.location.origin)}loadStyles(e){const t=`${this.getBaseUrl()}/assets/main.css`;console.log("Loading fleet visualization styles from:",t);const a=document.createElement("link");a.rel="stylesheet",a.href=t,e.appendChild(a);const l=document.createElement("style");l.textContent=`
+var d=Object.defineProperty;var c=(i,n,e)=>n in i?d(i,n,{enumerable:!0,configurable:!0,writable:!0,value:e}):i[n]=e;var r=(i,n,e)=>c(i,typeof n!="symbol"?n+"":n,e);import{q as m,n as g,F as f}from"./assets/FleetVisualization-Dx96NRZi.js";class h extends HTMLElement{constructor(){super(...arguments);r(this,"root",null);r(this,"_jsonUrl",null);r(this,"shadowContainer",null);r(this,"stylesElement",null)}static get observedAttributes(){return["data-url"]}get jsonUrl(){return this._jsonUrl}set jsonUrl(e){this._jsonUrl=e,this.render()}connectedCallback(){console.log("FleetVisualization web component connecting to DOM");const e=this.attachShadow({mode:"open"});this.shadowContainer=document.createElement("div"),this.shadowContainer.className="fleet-visualization-root",this.shadowContainer.style.width="100%",this.shadowContainer.style.height="100%",this.shadowContainer.style.fontFamily='-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',this.shadowContainer.style.fontSize="16px",this.shadowContainer.style.lineHeight="1.5",this.shadowContainer.style.color="#0f1034",this.shadowContainer.style.background="transparent",e.appendChild(this.shadowContainer),this._jsonUrl=this.getAttribute("data-url"),this.loadStyles(e),setTimeout(()=>{this.shadowContainer&&(console.log("Creating React root for FleetVisualization"),this.root=m.createRoot(this.shadowContainer),this.render())},100)}attributeChangedCallback(e,a,t){e==="data-url"&&a!==t&&(console.log("FleetVisualization data-url changed:",t),this._jsonUrl=t,this.render())}disconnectedCallback(){console.log("FleetVisualization web component disconnecting from DOM"),this.root&&(this.root.unmount(),this.root=null)}getBaseUrl(){const e=document.getElementsByTagName("script");let a="";for(let o=0;o<e.length;o++)if(e[o].src&&e[o].src.includes("fleet-visualization")){a=e[o].src;break}if(!a)return console.warn("Could not find fleet-visualization script tag. Using current origin instead."),window.location.origin;const t=new URL(a);return`${t.origin}${t.pathname.substring(0,t.pathname.lastIndexOf("/"))}`}loadStyles(e){const t=`${this.getBaseUrl()}/assets/main.css`;console.log("Loading fleet visualization styles from:",t);const o=document.createElement("link");o.rel="stylesheet",o.href=t,o.setAttribute("crossorigin","anonymous"),e.appendChild(o);const l=document.createElement("style");l.textContent=`
       :host {
         all: initial;
         display: block;
@@ -126,7 +126,64 @@ var d=Object.defineProperty;var c=(o,n,e)=>n in o?d(o,n,{enumerable:!0,configura
       button {
         font-family: inherit;
       }
-    `,e.appendChild(l),a.onload=()=>console.log("Fleet visualization styles loaded successfully from:",t),a.onerror=()=>{console.error("Failed to load fleet visualization styles from:",t);const s=document.createElement("style");s.textContent=`
+      
+      /* Tailwind classes - ensure common styles are available */
+      .grid {
+        display: grid;
+      }
+      
+      .grid-cols-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+      }
+      
+      @media (min-width: 640px) {
+        .sm\\:grid-cols-2 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      
+      @media (min-width: 768px) {
+        .md\\:grid-cols-3 {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+      
+      @media (min-width: 1024px) {
+        .lg\\:grid-cols-4 {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+      }
+      
+      .gap-4 {
+        gap: 1rem;
+      }
+      
+      .mb-4 {
+        margin-bottom: 1rem;
+      }
+      
+      .mb-6 {
+        margin-bottom: 1.5rem;
+      }
+      
+      .p-4 {
+        padding: 1rem;
+      }
+      
+      .md\\:p-6 {
+        padding: 1.5rem;
+      }
+      
+      .rounded-lg {
+        border-radius: 0.5rem;
+      }
+      
+      .shadow-sm {
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      }
+      
+      /* Add more critical Tailwind classes as needed */
+    `,e.appendChild(l),o.onload=()=>console.log("Fleet visualization styles loaded successfully from:",t),o.onerror=()=>{console.error("Failed to load fleet visualization styles from:",t),console.log("Applying fallback inline styles");const s=document.createElement("style");s.textContent=`
         /* Full Tailwind-compatible styling to ensure consistent appearance */
         .fleet-viz-container {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -231,4 +288,35 @@ var d=Object.defineProperty;var c=(o,n,e)=>n in o?d(o,n,{enumerable:!0,configura
         .mb-4 {
           margin-bottom: 1rem;
         }
-      `,e.appendChild(s)}}render(){if(!this.root){console.warn("Cannot render FleetVisualization - React root not created yet");return}console.log("Rendering FleetVisualization with jsonUrl:",this._jsonUrl),this.root.render(f.createElement(m,{jsonUrl:this._jsonUrl||void 0,className:"embedded-fleet-viz"}))}}customElements.get("fleet-visualization")||(console.log("Defining fleet-visualization custom element"),customElements.define("fleet-visualization",h));console.log("Fleet Visualization Web Component loaded");window.addEventListener("DOMContentLoaded",()=>{console.log("DOM fully loaded, Fleet Visualization Web Component ready");const o=document.getElementsByTagName("fleet-visualization");if(console.log(`Found ${o.length} fleet-visualization elements on the page`),o.length>0){const n=o[0];console.log("First fleet-visualization element:",n)}});
+        
+        /* Grid styles for vehicle layout */
+        .grid {
+          display: grid;
+        }
+        
+        .grid-cols-1 {
+          grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+        
+        @media (min-width: 640px) {
+          .sm\\:grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+        
+        @media (min-width: 768px) {
+          .md\\:grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+        }
+        
+        @media (min-width: 1024px) {
+          .lg\\:grid-cols-4 {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+          }
+        }
+        
+        .gap-4 {
+          gap: 1rem;
+        }
+      `,e.appendChild(s)}}render(){if(!this.root){console.warn("Cannot render FleetVisualization - React root not created yet");return}console.log("Rendering FleetVisualization with jsonUrl:",this._jsonUrl),this.root.render(g.createElement(f,{jsonUrl:this._jsonUrl||void 0,className:"embedded-fleet-viz"}))}}customElements.get("fleet-visualization")||(console.log("Defining fleet-visualization custom element"),customElements.define("fleet-visualization",h));console.log("Fleet Visualization Web Component loaded");window.addEventListener("DOMContentLoaded",()=>{console.log("DOM fully loaded, Fleet Visualization Web Component ready");const i=document.getElementsByTagName("fleet-visualization");if(console.log(`Found ${i.length} fleet-visualization elements on the page`),i.length>0){const n=i[0];console.log("First fleet-visualization element:",n)}});
