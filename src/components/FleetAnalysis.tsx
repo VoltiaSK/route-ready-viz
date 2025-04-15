@@ -28,7 +28,7 @@ const FleetAnalysis = ({ vehicles, fleetStats }: FleetAnalysisProps) => {
           The data analysis reveals that a significant majority of vehicles in this fleet operate within daily ranges that are perfectly suited for electric vehicle capabilities. With most modern EVs capable of ranges between 250-300km on a single charge, {fleetStats.evReadyPercentage}% of this fleet's daily operations could be transitioned without operational disruption.
         </p>
         
-        <div className="bg-viz-light rounded-lg p-4 my-6">
+        <div className="bg-white rounded-lg shadow-md p-4 my-6 hover:shadow-lg transition-shadow">
           <h3 className="font-bold text-viz-primary mb-2">Key Insights:</h3>
           <ul className="space-y-2 text-sm">
             <li className="flex items-start">

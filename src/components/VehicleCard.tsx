@@ -78,7 +78,7 @@ const VehicleCard = ({ vehicle, onClick }: VehicleCardProps) => {
           </div>
         </div>
         
-        {/* City vs Highway */}
+        {/* City vs Highway - SWAPPED COLORS HERE */}
         <div>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -90,8 +90,8 @@ const VehicleCard = ({ vehicle, onClick }: VehicleCardProps) => {
           <div className="mt-1 flex items-center space-x-2">
             <div className="flex-1 bg-gray-100 h-2 rounded-full overflow-hidden">
               <div className="flex h-full">
-                <div className="bg-viz-city h-full" style={{ width: `${cityPercentage}%` }} />
-                <div className="bg-viz-highway h-full" style={{ width: `${highwayPercentage}%` }} />
+                <div className="bg-viz-highway h-full" style={{ width: `${cityPercentage}%` }} />
+                <div className="bg-viz-city h-full" style={{ width: `${highwayPercentage}%` }} />
               </div>
             </div>
             <span className="text-xs text-gray-500">{cityPercentage}% city</span>
