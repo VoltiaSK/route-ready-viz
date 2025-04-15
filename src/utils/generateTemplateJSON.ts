@@ -20,3 +20,4 @@ console.log(`EV readiness should be approximately 92%.`);
 
 // This file can be run with:
 // npx ts-node src/utils/generateTemplateJSON.ts
+
