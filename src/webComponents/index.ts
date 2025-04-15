@@ -12,3 +12,8 @@ window.addEventListener('DOMContentLoaded', () => {
   const elements = document.getElementsByTagName('fleet-visualization');
   console.log(`Found ${elements.length} fleet-visualization elements on the page`);
 });
+
+// Instructions for deployment:
+// 1. Run 'npm run build' to generate the dist folder
+// 2. Ensure the CSS file is correctly named 'main.css' in the dist/assets/ directory
+// 3. Deploy all files to Vercel or your hosting platform
