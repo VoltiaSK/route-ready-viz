@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -96,6 +97,17 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-[#ecefff] text-[#0f1034];
+  }
+  
+  /* Add styling for the gradient elements */
+  .viz-gradient {
+    background: linear-gradient(315deg, #d09974, #995730);
+  }
+
+  .viz-gradient-text {
+    background: linear-gradient(315deg, #d09974, #995730);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 }
