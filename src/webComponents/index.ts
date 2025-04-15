@@ -15,6 +15,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Instructions for deployment:
 // 1. Run 'npm run build' to generate the dist folder
-// 2. After building, manually copy the generated CSS file from dist/assets/ and rename it to 'main.css'
-// 3. The CSS file must be placed in the dist/assets/ directory as 'main.css'
-// 4. Deploy all files to Vercel or your hosting platform
+// 2. The build process will automatically name the CSS file "main.css" in dist/assets/ 
+// 3. Deploy all files to Vercel or your hosting platform
+// 4. Use the component in your website with:
+//    <fleet-visualization data-url="path-to-your-data.json"></fleet-visualization>
+// 5. Make sure to include the script in your HTML:
+//    <script src="path-to-your-server/fleet-visualization.js"></script>
+

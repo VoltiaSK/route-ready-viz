@@ -3,12 +3,14 @@ import { VehicleData, VehicleDataResponse } from "@/types/VehicleData";
 
 export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
   try {
+    console.log(`Fetching vehicle data from: ${url}`);
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
     }
     const data: VehicleDataResponse = await response.json();
-    return data.data;
+    console.log(`Successfully fetched ${data.data?.length || 0} vehicles`);
+    return data.data || [];
   } catch (error) {
     console.error("Error fetching vehicle data:", error);
     throw error;
@@ -25,6 +27,8 @@ const generateVehicleId = (): string => {
 
 // For development/testing with realistic data for EV adoption
 export const getMockVehicleData = (): VehicleData[] => {
+  console.log("Generating mock vehicle data");
+  
   const totalVehicles = 150;
   const evReadyTarget = Math.floor(totalVehicles * 0.92); // 92% EV ready
   
@@ -87,6 +91,7 @@ export const getMockVehicleData = (): VehicleData[] => {
   }
   
   // Shuffle the array to mix EV ready and non-EV ready
+  console.log(`Generated ${vehicles.length} mock vehicles`);
   return vehicles.sort(() => Math.random() - 0.5);
 };
 

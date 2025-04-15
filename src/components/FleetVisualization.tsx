@@ -50,20 +50,30 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
         } else {
           // Use mock data if no URL is provided
           data = getMockVehicleData();
+          console.log("Using mock data:", data.length, "vehicles loaded");
         }
         
-        setVehicles(data);
-        setFilteredVehicles(data);
-        setFleetStats(getFleetEVReadiness(data));
+        if (data && data.length > 0) {
+          setVehicles(data);
+          setFilteredVehicles(data);
+          setFleetStats(getFleetEVReadiness(data));
+          setError(null);
+        } else {
+          throw new Error("No vehicle data found");
+        }
       } catch (err) {
         console.error("Failed to load vehicle data:", err);
         setError("Failed to load vehicle data. Please check your JSON URL.");
         
         // Fall back to mock data
         const mockData = getMockVehicleData();
-        setVehicles(mockData);
-        setFilteredVehicles(mockData);
-        setFleetStats(getFleetEVReadiness(mockData));
+        console.log("Falling back to mock data:", mockData.length, "vehicles loaded");
+        
+        if (mockData && mockData.length > 0) {
+          setVehicles(mockData);
+          setFilteredVehicles(mockData);
+          setFleetStats(getFleetEVReadiness(mockData));
+        }
       } finally {
         setLoading(false);
       }
@@ -134,7 +144,7 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
   // For better embedding, we'll ensure the component doesn't overflow its container
   return (
     <div className={cn(
-      "ev-viz-container font-sans bg-viz-background rounded-lg overflow-hidden shadow-sm",
+      "fleet-viz-container font-sans bg-fleet-viz-background rounded-lg overflow-hidden shadow-sm",
       className
     )}>
       {loading ? (
@@ -147,11 +157,11 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
           onClose={handleCloseDetail} 
         />
       ) : (
-        <div className="p-4 md:p-6 bg-viz-cardsBackground">
+        <div className="fleet-viz-wrapper p-4 md:p-6 bg-fleet-viz-cardsBackground">
           {/* Header with Title and Stats */}
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-viz-dark">Fleet Electrification Analysis</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-fleet-viz-dark">Fleet Electrification Analysis</h1>
               <p className="text-sm text-gray-500 mt-1">
                 {fleetStats.evReadyCount} of {fleetStats.totalVehicles} vehicles ready for EV transition
               </p>

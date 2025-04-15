@@ -25,17 +25,21 @@ class FleetVisualizationElement extends HTMLElement {
   connectedCallback() {
     console.log('FleetVisualization web component connecting to DOM');
     
+    // Create a shadow DOM to isolate styles
+    const shadow = this.attachShadow({ mode: 'open' });
+    
     // Create a container for the component
     this.shadowContainer = document.createElement('div');
+    this.shadowContainer.className = 'fleet-visualization-root';
     this.shadowContainer.style.width = '100%';
     this.shadowContainer.style.height = '100%';
-    this.appendChild(this.shadowContainer);
+    shadow.appendChild(this.shadowContainer);
     
     // Get the data-url attribute
     this._jsonUrl = this.getAttribute('data-url');
     
     // Load styles
-    this.loadStyles();
+    this.loadStyles(shadow);
     
     // Create root and render with a small delay to ensure DOM is ready
     setTimeout(() => {
@@ -61,10 +65,6 @@ class FleetVisualizationElement extends HTMLElement {
       this.root.unmount();
       this.root = null;
     }
-    
-    if (this.stylesElement && document.head.contains(this.stylesElement)) {
-      document.head.removeChild(this.stylesElement);
-    }
   }
   
   // Get the base URL of the script
@@ -88,32 +88,57 @@ class FleetVisualizationElement extends HTMLElement {
     return scriptUrl.substring(0, scriptUrl.lastIndexOf('/'));
   }
   
-  private loadStyles() {
-    // If there's already a style element with our ID, don't add another one
-    const existingStyle = document.getElementById('fleet-visualization-styles');
-    if (existingStyle) {
-      console.log('Fleet visualization styles already loaded');
-      return;
-    }
-    
-    this.stylesElement = document.createElement('link');
-    this.stylesElement.id = 'fleet-visualization-styles';
-    this.stylesElement.rel = 'stylesheet';
+  private loadStyles(shadow: ShadowRoot) {
     const baseUrl = this.getBaseUrl();
-    
-    // Try to load CSS from the main assets directory first
     const cssUrl = `${baseUrl}/assets/main.css`;
     console.log('Loading fleet visualization styles from:', cssUrl);
+
+    // Create style element
+    const style = document.createElement('link');
+    style.rel = 'stylesheet';
+    style.href = cssUrl;
     
-    this.stylesElement.href = cssUrl;
+    // Add to shadow DOM
+    shadow.appendChild(style);
     
-    this.stylesElement.onload = () => console.log('Fleet visualization styles loaded successfully from:', cssUrl);
-    this.stylesElement.onerror = () => {
+    // Also add a base style to ensure proper isolation
+    const baseStyle = document.createElement('style');
+    baseStyle.textContent = `
+      :host {
+        all: initial;
+        display: block;
+        width: 100%;
+        height: 100%;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      }
+      
+      .fleet-visualization-root {
+        width: 100%;
+        height: 100%;
+        background: #ffffff;
+        color: #000000;
+        font-size: 16px;
+      }
+    `;
+    shadow.appendChild(baseStyle);
+    
+    style.onload = () => console.log('Fleet visualization styles loaded successfully from:', cssUrl);
+    style.onerror = () => {
       console.error('Failed to load fleet visualization styles from:', cssUrl);
-      // No fallback needed - we'll make sure the CSS is always in the correct location
+      // Add a fallback inline style
+      const fallbackStyle = document.createElement('style');
+      fallbackStyle.textContent = `
+        /* Minimal required styles */
+        .fleet-viz-container {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          background-color: #ecefff;
+          color: #0f1034;
+          padding: 1rem;
+          border-radius: 0.5rem;
+        }
+      `;
+      shadow.appendChild(fallbackStyle);
     };
-    
-    document.head.appendChild(this.stylesElement);
   }
 
   private render() {
