@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -65,16 +66,16 @@ export default {
         viz: {
           primary: '#d09974',
           secondary: '#995730',
-          tertiary: '#6E59A5',
-          dark: '#0f1034',
+          tertiary: '#0f1034', // Changed from #6E59A5 to dark blue
+          dark: '#0f1034', // Already dark blue
           light: '#E5DEFF',
-          accent: '#0EA5E9',
-          ready: '#0EA5E9',
+          accent: '#0f1034', // Changed from #0EA5E9 to dark blue
+          ready: '#0f1034', // Changed from #0EA5E9 to dark blue
           warning: '#F97316',
           critical: '#D946EF',
           background: '#ecefff',
           cardsBackground: '#f7f9ff',
-          highway: '#33C3F0',
+          highway: '#0f1034', // Changed from #33C3F0 to dark blue
           city: '#D3E4FD',
           gradient: 'linear-gradient(315deg, #d09974, #995730)'
         }
