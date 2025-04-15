@@ -104,4 +104,10 @@
   .viz-gradient {
     background: linear-gradient(315deg, #d09974, #995730);
   }
+
+  .viz-gradient-text {
+    background: linear-gradient(315deg, #d09974, #995730);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 }
