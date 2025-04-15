@@ -50,7 +50,7 @@ const VehicleDetail = ({ vehicle, onClose }: VehicleDetailProps) => {
         
         <div className={cn(
           "px-3 py-1 rounded-full text-xs font-medium",
-          isEVReady ? "bg-viz-light text-viz-ready" : "bg-gray-100 text-gray-500"
+          isEVReady ? "bg-green-50 text-viz-ready" : "bg-red-50 text-viz-critical"
         )}>
           {isEVReady ? "EV Ready" : "Not EV Ready"}
         </div>
@@ -70,7 +70,7 @@ const VehicleDetail = ({ vehicle, onClose }: VehicleDetailProps) => {
         
         <div className={cn(
           "flex items-center space-x-1",
-          isEVReady ? "text-viz-ready" : "text-gray-400"
+          isEVReady ? "text-viz-ready" : "text-viz-critical"
         )}>
           <Battery size={20} />
           <span className="text-sm font-medium">

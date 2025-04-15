@@ -101,10 +101,10 @@ const VehicleCard = ({ vehicle, onClick }: VehicleCardProps) => {
         {/* EV Ready Indicator */}
         <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
           <div className="flex items-center space-x-2">
-            <Battery size={14} className={cn(isEVReady ? "text-viz-ready" : "text-gray-400")} />
+            <Battery size={14} className={cn(isEVReady ? "text-viz-ready" : "text-viz-critical")} />
             <span className={cn(
               "text-xs font-medium",
-              isEVReady ? "text-viz-ready" : "text-gray-400"
+              isEVReady ? "text-viz-ready" : "text-viz-critical"
             )}>
               {isEVReady ? "EV Ready" : "Not EV Ready"}
             </span>

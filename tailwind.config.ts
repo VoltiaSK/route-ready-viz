@@ -66,17 +66,17 @@ export default {
         viz: {
           primary: '#d09974',
           secondary: '#995730',
-          tertiary: '#0f1034', // Changed from #6E59A5 to dark blue
-          dark: '#0f1034', // Already dark blue
+          tertiary: '#0f1034',
+          dark: '#0f1034',
           light: '#E5DEFF',
-          accent: '#0f1034', // Changed from #0EA5E9 to dark blue
-          ready: '#0f1034', // Changed from #0EA5E9 to dark blue
+          accent: '#0f1034',
+          ready: '#17B26A', // Changed from #0f1034 to green
           warning: '#F97316',
-          critical: '#D946EF',
+          critical: '#D82C2C', // Changed from #D946EF to red
           background: '#ecefff',
           cardsBackground: '#f7f9ff',
-          highway: '#0f1034', // Changed from #33C3F0 to dark blue
-          city: '#D3E4FD',
+          highway: '#0f1034',
+          city: '#f7f9ff', // Changed from #D3E4FD to #f7f9ff
           gradient: 'linear-gradient(315deg, #d09974, #995730)'
         }
       },
