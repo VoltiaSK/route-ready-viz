@@ -38,6 +38,11 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
   }
 
   console.log(`Rendering VehicleGrid with ${vehicles.length} vehicles`);
+  
+  // Log warning if we're showing less than the full dataset
+  if (vehicles.length < 150) {
+    console.warn(`VehicleGrid is showing ${vehicles.length} vehicles, which is less than the expected 150 vehicles.`);
+  }
 
   return (
     <div 

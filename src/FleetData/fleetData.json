@@ -138,6 +138,18 @@
     {"depot":"CZ","lorry":"9P33445","average_distance":255,"minimum_distance":51,"maximum_distance":545,"median_distance":235,"min_95_perc":65,"max_95_perc":315,"average_highway_distance":153,"median_highway":142},
     {"depot":"SK","lorry":"7M66778","average_distance":275,"minimum_distance":55,"maximum_distance":585,"median_distance":265,"min_95_perc":70,"max_95_perc":345,"average_highway_distance":165,"median_highway":154},
     {"depot":"CZ","lorry":"8L22334","average_distance":262,"minimum_distance":52,"maximum_distance":560,"median_distance":245,"min_95_perc":67,"max_95_perc":325,"average_highway_distance":157,"median_highway":147},
-    {"depot":"SK","lorry":"9P99001","average_distance":285,"minimum_distance":57,"maximum_distance":605,"median_distance":275,"min_95_perc":73,"max_95_perc":355,"average_highway_distance":171,"median_highway":160}
+    {"depot":"SK","lorry":"9P99001","average_distance":285,"minimum_distance":57,"maximum_distance":605,"median_distance":275,"min_95_perc":73,"max_95_perc":355,"average_highway_distance":171,"median_highway":160},
+    {"depot":"CZ","lorry":"5K12345","average_distance":178,"minimum_distance":35,"maximum_distance":420,"median_distance":165,"min_95_perc":38,"max_95_perc":245,"average_highway_distance":107,"median_highway":100},
+    {"depot":"SK","lorry":"6J67890","average_distance":145,"minimum_distance":29,"maximum_distance":345,"median_distance":135,"min_95_perc":32,"max_95_perc":230,"average_highway_distance":87,"median_highway":81},
+    {"depot":"CZ","lorry":"7B45678","average_distance":190,"minimum_distance":38,"maximum_distance":450,"median_distance":180,"min_95_perc":40,"max_95_perc":260,"average_highway_distance":114,"median_highway":106},
+    {"depot":"SK","lorry":"8D98765","average_distance":132,"minimum_distance":26,"maximum_distance":315,"median_distance":122,"min_95_perc":29,"max_95_perc":220,"average_highway_distance":79,"median_highway":74},
+    {"depot":"CZ","lorry":"9F54321","average_distance":205,"minimum_distance":41,"maximum_distance":480,"median_distance":195,"min_95_perc":45,"max_95_perc":275,"average_highway_distance":123,"median_highway":115},
+    {"depot":"SK","lorry":"5G13579","average_distance":120,"minimum_distance":24,"maximum_distance":290,"median_distance":110,"min_95_perc":26,"max_95_perc":205,"average_highway_distance":72,"median_highway":67},
+    {"depot":"CZ","lorry":"6H24680","average_distance":185,"minimum_distance":37,"maximum_distance":440,"median_distance":175,"min_95_perc":40,"max_95_perc":255,"average_highway_distance":111,"median_highway":104},
+    {"depot":"SK","lorry":"7C97531","average_distance":150,"minimum_distance":30,"maximum_distance":360,"median_distance":140,"min_95_perc":33,"max_95_perc":235,"average_highway_distance":90,"median_highway":84},
+    {"depot":"CZ","lorry":"8E11223","average_distance":220,"minimum_distance":44,"maximum_distance":510,"median_distance":210,"min_95_perc":48,"max_95_perc":290,"average_highway_distance":132,"median_highway":123},
+    {"depot":"SK","lorry":"9A33445","average_distance":115,"minimum_distance":23,"maximum_distance":280,"median_distance":105,"min_95_perc":25,"max_95_perc":200,"average_highway_distance":69,"median_highway":64},
+    {"depot":"CZ","lorry":"5B55667","average_distance":175,"minimum_distance":35,"maximum_distance":415,"median_distance":165,"min_95_perc":38,"max_95_perc":250,"average_highway_distance":105,"median_highway":98},
+    {"depot":"SK","lorry":"6D77889","average_distance":140,"minimum_distance":28,"maximum_distance":335,"median_distance":130,"min_95_perc":31,"max_95_perc":225,"average_highway_distance":84,"median_highway":78}
   ]
 }

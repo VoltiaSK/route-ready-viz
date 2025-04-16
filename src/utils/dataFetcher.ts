@@ -51,6 +51,11 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     if (vehicleData.length > 0 && !vehicleData[0].lorry) {
       throw new Error("Invalid vehicle data format: missing expected properties");
     }
+
+    // Check if we have the expected number of vehicles
+    if (vehicleData.length !== 150) {
+      console.warn(`Expected 150 vehicles but found ${vehicleData.length}. This may indicate a data issue.`);
+    }
     
     return vehicleData;
   } catch (error: any) {

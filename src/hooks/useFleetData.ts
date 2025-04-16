@@ -65,6 +65,12 @@ export const useFleetData = (jsonUrl?: string) => {
         if (fleetDataJson && fleetDataJson.data && fleetDataJson.data.length > 0) {
           const internalData = fleetDataJson.data as VehicleData[];
           console.log(`Using internal fleet data: ${internalData.length} vehicles loaded from FleetData/fleetData.json`);
+          
+          // Verify the expected count
+          if (internalData.length !== 150) {
+            console.warn(`Expected 150 vehicles but found ${internalData.length}. This may indicate a data issue.`);
+          }
+          
           setVehicles(internalData);
           updateFleetStats(internalData);
           setError(null);
