@@ -2,6 +2,7 @@
 import { VehicleData } from "@/types/VehicleData";
 import VehicleCard from "./VehicleCard";
 import EmptyState from "./EmptyState";
+import { useEffect, useRef } from "react";
 
 interface VehicleGridProps {
   vehicles: VehicleData[];
@@ -13,6 +14,24 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
   const placeholders = vehicles.length > 0 && vehicles.length < 12 
     ? Array(12 - vehicles.length).fill(null) 
     : [];
+    
+  const gridRef = useRef<HTMLDivElement>(null);
+  
+  // Fix card sizing and clickability in embedded contexts
+  useEffect(() => {
+    const handleResize = () => {
+      if (gridRef.current) {
+        const isEmbedded = window !== window.parent;
+        if (isEmbedded) {
+          gridRef.current.classList.add('embedded-grid');
+        }
+      }
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   if (!vehicles || vehicles.length === 0) {
     return <EmptyState />;
@@ -21,12 +40,26 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
   console.log(`Rendering VehicleGrid with ${vehicles.length} vehicles`);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4 min-h-[768px]">
+    <div 
+      ref={gridRef}
+      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4 min-h-[768px]"
+    >
       {vehicles.map((vehicle) => (
         <div 
           key={vehicle.lorry}
-          className="cursor-pointer transform transition-transform duration-150 hover:scale-102"
-          onClick={() => onSelectVehicle(vehicle)}
+          className="transform transition-transform duration-150 hover:scale-105 relative z-10"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelectVehicle(vehicle);
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label={`View details for vehicle ${vehicle.lorry}`}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              onSelectVehicle(vehicle);
+            }
+          }}
         >
           <VehicleCard 
             vehicle={vehicle} 
@@ -43,6 +76,18 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
           aria-hidden="true"
         />
       ))}
+      
+      <style jsx>{`
+        /* Ensure consistent card sizing in embedded contexts */
+        .embedded-grid > div {
+          min-height: 232px;
+        }
+        
+        /* Ensure cards are clickable in embedded contexts */
+        .embedded-grid > div:hover {
+          z-index: 20;
+        }
+      `}</style>
     </div>
   );
 };

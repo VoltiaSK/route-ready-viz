@@ -11,9 +11,9 @@ const generateVehicleId = (): string => {
   return `${randomPrefix}${randomNumber}`;
 };
 
-// Generate the full dataset
-const generateTemplateJSON = (): VehicleDataResponse => {
-  console.log("Generating template vehicle data");
+// Generate the full dataset according to specifications
+export const generateTemplateJSON = (): VehicleDataResponse => {
+  console.log("Generating fleet data with 150 vehicles (92% EV ready)");
   
   const totalVehicles = 150;
   const evReadyTarget = Math.floor(totalVehicles * 0.92); // 92% EV ready
@@ -85,19 +85,23 @@ const generateTemplateJSON = (): VehicleDataResponse => {
   };
 };
 
+// Make sure the FleetData directory exists
+const fleetDataDir = path.join(__dirname, '../../src/FleetData');
+if (!fs.existsSync(fleetDataDir)) {
+  fs.mkdirSync(fleetDataDir, { recursive: true });
+  console.log(`Created FleetData directory at: ${fleetDataDir}`);
+}
+
 // Generate the JSON file
 const jsonData = generateTemplateJSON();
 
 // Convert to JSON string with nice formatting
 const jsonString = JSON.stringify(jsonData, null, 2);
 
-// Write to public folder (this is where data should be served from)
-const publicPath = path.join(__dirname, '../../public/fleetData.json');
-fs.writeFileSync(publicPath, jsonString, 'utf8');
-console.log(`Template JSON file with 150 vehicles created at: ${publicPath}`);
+// Write to FleetData folder (private to app)
+const fleetDataPath = path.join(fleetDataDir, 'fleetData.json');
+fs.writeFileSync(fleetDataPath, jsonString, 'utf8');
+console.log(`Fleet data with 150 vehicles saved to: ${fleetDataPath}`);
 
 // This file can be run with:
 // npx ts-node src/utils/generateTemplateJSON.ts
-
-// Export the function for potential reuse
-export { generateTemplateJSON };
