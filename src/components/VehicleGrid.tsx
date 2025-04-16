@@ -1,3 +1,4 @@
+
 import { VehicleData } from "@/types/VehicleData";
 import VehicleCard from "./VehicleCard";
 import EmptyState from "./EmptyState";
@@ -76,7 +77,6 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
         />
       ))}
       
-      {/* Adding styling as regular style tag without jsx property */}
       <style>
         {`
           /* Ensure consistent card sizing in embedded contexts */
