@@ -1,4 +1,3 @@
-
 import { VehicleData } from "@/types/VehicleData";
 import VehicleCard from "./VehicleCard";
 import EmptyState from "./EmptyState";
@@ -77,17 +76,20 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
         />
       ))}
       
-      <style jsx>{`
-        /* Ensure consistent card sizing in embedded contexts */
-        .embedded-grid > div {
-          min-height: 232px;
-        }
-        
-        /* Ensure cards are clickable in embedded contexts */
-        .embedded-grid > div:hover {
-          z-index: 20;
-        }
-      `}</style>
+      {/* Adding styling as regular style tag without jsx property */}
+      <style>
+        {`
+          /* Ensure consistent card sizing in embedded contexts */
+          .embedded-grid > div {
+            min-height: 232px;
+          }
+          
+          /* Ensure cards are clickable in embedded contexts */
+          .embedded-grid > div:hover {
+            z-index: 20;
+          }
+        `}
+      </style>
     </div>
   );
 };
