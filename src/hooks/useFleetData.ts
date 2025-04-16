@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { VehicleData } from "@/types/VehicleData";
 import { isVehicleEVReady } from "@/utils/dataFetcher";
-import fleetData from "@/FleetData/fleetData.json";
+import fleetDataJson from "@/data/fleetData.json"; // Import from the correct source file with 150 entries
 
 export const useFleetData = (jsonUrl?: string) => {
   const [vehicles, setVehicles] = useState<VehicleData[]>([]);
@@ -61,10 +61,10 @@ export const useFleetData = (jsonUrl?: string) => {
           }
         }
 
-        // Use internal pre-generated data from FleetData folder
-        if (fleetData && fleetData.data && fleetData.data.length > 0) {
-          const internalData = fleetData.data as VehicleData[];
-          console.log(`Using internal fleet data: ${internalData.length} vehicles loaded`);
+        // Use internal data from the imported JSON file
+        if (fleetDataJson && fleetDataJson.data && fleetDataJson.data.length > 0) {
+          const internalData = fleetDataJson.data as VehicleData[];
+          console.log(`Using internal fleet data: ${internalData.length} vehicles loaded from data/fleetData.json`);
           setVehicles(internalData);
           updateFleetStats(internalData);
           setError(null);
