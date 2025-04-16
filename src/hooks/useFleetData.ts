@@ -8,6 +8,7 @@ export const useFleetData = (jsonUrl?: string) => {
   const [vehicles, setVehicles] = useState<VehicleData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [usingMockData, setUsingMockData] = useState(false);
   const [fleetStats, setFleetStats] = useState({
     evReadyCount: 0,
     evReadyPercentage: 0,
@@ -50,6 +51,7 @@ export const useFleetData = (jsonUrl?: string) => {
               setVehicles(vehicleData);
               updateFleetStats(vehicleData);
               setError(null);
+              setUsingMockData(false);
               setLoading(false);
               return;
             }
@@ -66,12 +68,14 @@ export const useFleetData = (jsonUrl?: string) => {
           setVehicles(internalData);
           updateFleetStats(internalData);
           setError(null);
+          setUsingMockData(jsonUrl ? true : false); // Only mark as mock data if we tried to load from URL
         } else {
           throw new Error("Fleet data is not available");
         }
       } catch (err) {
         console.error("Error loading fleet data:", err);
         setError("Failed to load fleet data.");
+        setUsingMockData(true);
       } finally {
         setLoading(false);
       }
@@ -95,5 +99,5 @@ export const useFleetData = (jsonUrl?: string) => {
     });
   };
 
-  return { vehicles, loading, error, fleetStats };
+  return { vehicles, loading, error, usingMockData, fleetStats };
 };
