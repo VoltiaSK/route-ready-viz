@@ -12,6 +12,7 @@ import FleetOverview from "./FleetOverview";
 import { useFleetData } from "@/hooks/useFleetData";
 import { useFleetFilters } from "@/hooks/useFleetFilters";
 import VehicleDetailModal from "./VehicleDetailModal";
+import FleetElectrificationChart from "./FleetElectrificationChart";
 
 interface FleetVisualizationProps {
   jsonUrl?: string;
@@ -63,6 +64,12 @@ const FleetVisualization = ({ jsonUrl, className }: FleetVisualizationProps) => 
             evReadyCount={fleetStats.evReadyCount}
             evReadyPercentage={fleetStats.evReadyPercentage}
             totalVehicles={fleetStats.totalVehicles}
+          />
+          
+          {/* Fleet Electrification Chart */}
+          <FleetElectrificationChart 
+            vehicles={vehicles}
+            evReadyPercentage={fleetStats.evReadyPercentage}
           />
           
           {/* Main Tabs */}
