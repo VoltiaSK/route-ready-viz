@@ -1,4 +1,77 @@
 
 {
-  "data": []
+  "data": [
+    {
+      "depot": "CZ",
+      "lorry": "8L34567",
+      "average_distance": 120,
+      "minimum_distance": 45,
+      "maximum_distance": 190,
+      "median_distance": 115,
+      "min_95_perc": 50,
+      "max_95_perc": 170,
+      "average_highway_distance": 45,
+      "median_highway": 42
+    },
+    {
+      "depot": "SK",
+      "lorry": "7M12345",
+      "average_distance": 180,
+      "minimum_distance": 65,
+      "maximum_distance": 280,
+      "median_distance": 175,
+      "min_95_perc": 75,
+      "max_95_perc": 215,
+      "average_highway_distance": 60,
+      "median_highway": 55
+    },
+    {
+      "depot": "SK",
+      "lorry": "9P78901",
+      "average_distance": 95,
+      "minimum_distance": 35,
+      "maximum_distance": 145,
+      "median_distance": 90,
+      "min_95_perc": 40,
+      "max_95_perc": 130,
+      "average_highway_distance": 25,
+      "median_highway": 23
+    },
+    {
+      "depot": "CZ",
+      "lorry": "8L23456",
+      "average_distance": 210,
+      "minimum_distance": 75,
+      "maximum_distance": 320,
+      "median_distance": 200,
+      "min_95_perc": 85,
+      "max_95_perc": 245,
+      "average_highway_distance": 85,
+      "median_highway": 80
+    },
+    {
+      "depot": "SK",
+      "lorry": "7M67890",
+      "average_distance": 270,
+      "minimum_distance": 95,
+      "maximum_distance": 450,
+      "median_distance": 260,
+      "min_95_perc": 120,
+      "max_95_perc": 350,
+      "average_highway_distance": 140,
+      "median_highway": 130
+    },
+    {
+      "depot": "CZ",
+      "lorry": "9P45678",
+      "average_distance": 145,
+      "minimum_distance": 55,
+      "maximum_distance": 220,
+      "median_distance": 135,
+      "min_95_perc": 60,
+      "max_95_perc": 190,
+      "average_highway_distance": 50,
+      "median_highway": 46
+    }
+  ]
 }
