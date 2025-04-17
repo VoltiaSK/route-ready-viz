@@ -22,28 +22,36 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleData | null>(null);
   
-  // Use external data source by default
+  // Always use this external URL to ensure we get the full dataset
   const externalDataUrl = "https://route-ready-viz.vercel.app/fleetData.json";
-  const dataSource = dataSourceUrl || jsonUrl || externalDataUrl;
   
-  // Use the data source
-  const { vehicles, loading, error, usingMockData, fleetStats } = useFleetData(dataSource);
+  // Use the data source - always prioritizing the external URL
+  const { vehicles, loading, error, usingMockData, fleetStats } = useFleetData();
+  
+  // Track vehicles count for debugging
+  const [debugInfo, setDebugInfo] = useState({
+    vehicleCount: 0,
+    lastLogged: new Date()
+  });
 
   // Additional logging for data visibility
   useEffect(() => {
-    console.log(`[FleetVisualization] Using data source: ${dataSource}`);
-    console.log(`[FleetVisualization] Received ${vehicles.length} vehicles from useFleetData`);
-    console.log(`[FleetVisualization] Loading: ${loading}, Error: ${error ? 'Yes' : 'No'}`);
-    console.log(`[FleetVisualization] Stats: ${fleetStats.evReadyCount}/${fleetStats.totalVehicles} vehicles are EV-ready`);
+    console.log(`🔄 [FleetVisualization] Vehicles count changed: ${vehicles.length}`);
+    console.log(`📊 [FleetVisualization] Stats: ${fleetStats.evReadyCount}/${fleetStats.totalVehicles} vehicles are EV-ready`);
+    
+    setDebugInfo({
+      vehicleCount: vehicles.length,
+      lastLogged: new Date()
+    });
     
     if (vehicles.length > 0) {
       toast({
-        title: "Data loaded successfully",
-        description: `Loaded ${vehicles.length} vehicles from ${dataSource}`,
+        title: `${vehicles.length} vehicles loaded`,
+        description: `Fleet breakdown: ${fleetStats.evReadyCount} EV-ready (${Math.round((fleetStats.evReadyCount/vehicles.length)*100)}%)`,
         duration: 3000,
       });
     }
-  }, [vehicles, loading, error, fleetStats, dataSource]);
+  }, [vehicles, fleetStats]);
 
   const handleSelectVehicle = (vehicle: VehicleData) => {
     console.log("Vehicle selected:", vehicle.lorry);
@@ -62,8 +70,21 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
     return <ErrorState error={error} showingMockData={usingMockData} />;
   }
 
+  // Safety check - if somehow we got no vehicles but no error either
+  if (!vehicles || vehicles.length === 0) {
+    return <ErrorState 
+      error="No vehicle data was loaded, but no specific error was detected. Please check the data source."
+      showingMockData={false}
+    />;
+  }
+
   return (
     <div className="w-full max-w-7xl mx-auto bg-white rounded-lg shadow-sm p-6">
+      {/* Debug info */}
+      <div className="text-xs text-gray-400 mb-2">
+        Loaded {vehicles.length} vehicles • Last updated: {debugInfo.lastLogged.toLocaleTimeString()}
+      </div>
+      
       <FleetStats 
         totalVehicles={fleetStats.totalVehicles} 
         evReadyCount={fleetStats.evReadyCount}

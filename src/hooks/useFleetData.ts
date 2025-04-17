@@ -2,6 +2,10 @@
 import { useState, useEffect, useRef } from "react";
 import { VehicleData } from "@/types/VehicleData";
 import { fetchVehicleData, getFleetEVReadiness } from "@/utils/dataFetcher";
+import { toast } from "@/components/ui/use-toast";
+
+// Force using the external data URL to ensure we're getting the complete dataset
+const EXTERNAL_DATA_URL = "https://route-ready-viz.vercel.app/fleetData.json";
 
 export const useFleetData = (jsonUrl?: string) => {
   const [vehicles, setVehicles] = useState<VehicleData[]>([]);
@@ -14,8 +18,9 @@ export const useFleetData = (jsonUrl?: string) => {
     totalVehicles: 0
   });
   
+  // Store vehicles count for debugging
+  const vehiclesCountRef = useRef<number>(0);
   const loadAttempts = useRef(0);
-  const externalDataUrl = "https://route-ready-viz.vercel.app/fleetData.json";
 
   useEffect(() => {
     const loadData = async () => {
@@ -24,10 +29,10 @@ export const useFleetData = (jsonUrl?: string) => {
       setUsingMockData(false);
       
       try {
-        // Use the external data URL first, then fall back to jsonUrl parameter, then local file
-        const dataUrl = externalDataUrl || jsonUrl || '/fleetData.json';
+        // Always use the external data URL to ensure consistent data
+        const dataUrl = EXTERNAL_DATA_URL;
         const currentAttempt = ++loadAttempts.current;
-        console.log(`[Attempt ${currentAttempt}] Attempting to load fleet data from: ${dataUrl}`);
+        console.log(`⏳ [Attempt ${currentAttempt}] Loading fleet data from: ${dataUrl}`);
         
         const vehicleData = await fetchVehicleData(dataUrl);
         
@@ -35,23 +40,37 @@ export const useFleetData = (jsonUrl?: string) => {
           throw new Error("No vehicle data was returned");
         }
         
-        console.log(`[Attempt ${currentAttempt}] Successfully loaded ALL ${vehicleData.length} vehicles from ${dataUrl}`);
+        // Store the count for later comparison
+        vehiclesCountRef.current = vehicleData.length;
+        
+        console.log(`✅ [Attempt ${currentAttempt}] Successfully loaded ALL ${vehicleData.length} vehicles from ${dataUrl}`);
         
         const stats = getFleetEVReadiness(vehicleData);
         
-        console.log(`[CRITICAL] Setting state with ${vehicleData.length} vehicles`);
-        console.log(`[Data Source] Using data from: ${dataUrl}`);
+        console.log(`🔄 [CRITICAL] Setting state with ${vehicleData.length} vehicles`);
+        console.log(`📊 [Data Source] Using data from: ${dataUrl}`);
         
-        setVehicles(vehicleData);
+        // Important: Create a completely new array to avoid any reference issues
+        const vehiclesToSet = [...vehicleData];
+        setVehicles(vehiclesToSet);
         setFleetStats(stats);
         
+        // Verify after state update
         setTimeout(() => {
-          console.log(`[State Check] Vehicles array in state now has ${vehicleData.length} vehicles`);
+          console.log(`🔍 [State Verify] Vehicles array in state has ${vehiclesToSet.length} vehicles`);
+          if (vehiclesToSet.length !== vehiclesCountRef.current) {
+            console.error(`⚠️ Possible state update issue: Expected ${vehiclesCountRef.current} vehicles but have ${vehiclesToSet.length}`);
+          }
         }, 0);
         
         setLoading(false);
+        toast({
+          title: "Fleet data loaded",
+          description: `Successfully loaded ${vehicleData.length} vehicles from external source`,
+          duration: 5000,
+        });
       } catch (err: any) {
-        console.error("Failed to load fleet data:", err);
+        console.error("❌ Failed to load fleet data:", err);
         setError(err.message || "Failed to load fleet data. Please check the data source.");
         
         setVehicles([]);
@@ -62,15 +81,22 @@ export const useFleetData = (jsonUrl?: string) => {
         });
         setUsingMockData(false);
         setLoading(false);
+        
+        toast({
+          variant: "destructive",
+          title: "Error loading data",
+          description: err.message || "Failed to load vehicle data",
+          duration: 5000,
+        });
       }
     };
     
     loadData();
-  }, [jsonUrl]);
+  }, []);  // Remove jsonUrl from dependencies to prevent reloading
 
   useEffect(() => {
-    console.log(`[State Update] Vehicles state changed: ${vehicles.length} vehicles`);
-    console.log(`[State Update] Fleet stats: ${fleetStats.evReadyCount}/${fleetStats.totalVehicles} vehicles are EV-ready`);
+    console.log(`📊 [State Update] Vehicles state changed: ${vehicles.length} vehicles`);
+    console.log(`📊 [State Update] Fleet stats: ${fleetStats.evReadyCount}/${fleetStats.totalVehicles} vehicles are EV-ready`);
   }, [vehicles, fleetStats]);
 
   return { vehicles, loading, error, usingMockData, fleetStats };
