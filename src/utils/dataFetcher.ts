@@ -19,8 +19,18 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
       throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
     }
     
-    // Parse the JSON response
-    const jsonData = await response.json();
+    // Get the raw response text to analyze it
+    const responseText = await response.text();
+    console.log(`Received raw JSON data: ${responseText.length} characters`);
+    
+    // Parse the raw text to JSON
+    let jsonData;
+    try {
+      jsonData = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error("JSON parsing error:", parseError);
+      throw new Error(`Invalid JSON format: ${parseError.message}`);
+    }
     
     // Check if the response has a 'data' property containing the vehicles array
     let vehicleData: VehicleData[] = [];
@@ -41,9 +51,8 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
       throw new Error("No vehicle data found in the response");
     }
     
-    // Get the full length of the data for verification
-    const totalVehicleCount = vehicleData.length;
-    console.log(`Total number of vehicles in JSON: ${totalVehicleCount}`);
+    // Log the complete data for verification
+    console.log(`Successfully parsed ${vehicleData.length} vehicles from JSON`);
     
     // Verify we're getting complete data
     const jsonString = JSON.stringify(vehicleData);
@@ -53,15 +62,16 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     const evReady = vehicleData.filter(v => v.max_95_perc <= 300);
     const nonEvReady = vehicleData.filter(v => v.max_95_perc > 300);
     
-    console.log(`Successfully loaded ${vehicleData.length} vehicles:`);
-    console.log(`- ${evReady.length} EV-ready vehicles`);
-    console.log(`- ${nonEvReady.length} non-EV-ready vehicles`);
+    console.log(`Fleet breakdown:`);
+    console.log(`- Total vehicles: ${vehicleData.length}`);
+    console.log(`- EV-ready vehicles: ${evReady.length}`);
+    console.log(`- Non-EV-ready vehicles: ${nonEvReady.length}`);
     
-    // Double check we're returning the full array
-    if (vehicleData.length !== totalVehicleCount) {
-      console.error(`Data integrity issue: Expected ${totalVehicleCount} but returning ${vehicleData.length}`);
+    if (vehicleData.length > 0) {
+      console.log(`First vehicle: ${vehicleData[0].lorry}, Last vehicle: ${vehicleData[vehicleData.length - 1].lorry}`);
     }
     
+    // IMPORTANT: Make sure we return the FULL array without any slicing or truncation
     return vehicleData;
   } catch (error) {
     console.error("Error fetching vehicle data:", error);

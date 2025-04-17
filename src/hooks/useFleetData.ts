@@ -31,19 +31,13 @@ export const useFleetData = (jsonUrl?: string) => {
           throw new Error("No vehicle data was returned");
         }
         
-        // Log the actual number of vehicles to verify
-        console.log(`Successfully loaded ${vehicleData.length} vehicles from ${dataUrl}`);
+        // Log the FULL data set information
+        console.log(`Successfully loaded ALL ${vehicleData.length} vehicles from ${dataUrl}`);
         
-        if (vehicleData.length > 0) {
-          // Sample check to ensure data quality
-          const sampleVehicle = vehicleData[0];
-          console.log(`Data integrity check - First vehicle: ${sampleVehicle.lorry}, Last vehicle: ${vehicleData[vehicleData.length - 1].lorry}`);
-        }
-        
-        // Calculate fleet statistics
+        // Calculate fleet statistics with the FULL dataset
         const stats = getFleetEVReadiness(vehicleData);
         
-        // Update state with the loaded data
+        // Update state with the FULL loaded data - no slicing or filtering
         setVehicles(vehicleData);
         setFleetStats(stats);
         setLoading(false);
