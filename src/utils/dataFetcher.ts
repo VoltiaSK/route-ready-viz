@@ -1,4 +1,3 @@
-
 import { VehicleData } from "@/types/VehicleData";
 
 /**
@@ -19,7 +18,8 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
         'Accept': 'application/json'
       },
       mode: 'cors', // Enable CORS for external URLs
-      signal: controller.signal
+      signal: controller.signal,
+      credentials: 'omit' // Avoid sending credentials
     });
     
     clearTimeout(timeoutId);
@@ -28,31 +28,42 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
       throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
     }
     
-    // Get the raw response text to analyze it
+    // Get the raw text response before parsing
     const responseText = await response.text();
-    const contentLength = response.headers.get('content-length');
-    console.log(`📊 Received raw JSON data: ${responseText.length} characters (Content-Length header: ${contentLength || 'not provided'})`);
+    console.log(`📊 Raw data length: ${responseText.length} characters`);
     
-    // Parse the raw text to JSON
+    // Check if the response is empty
+    if (!responseText || responseText.trim() === '') {
+      throw new Error('Received empty response from server');
+    }
+    
+    // Parse the JSON manually to avoid potential issues
     let jsonData;
     try {
       jsonData = JSON.parse(responseText);
+      console.log(`💾 Successfully parsed JSON data`);
     } catch (parseError: any) {
       console.error("JSON parsing error:", parseError);
       throw new Error(`Invalid JSON format: ${parseError.message}`);
     }
     
-    // Check if the response has a 'data' property containing the vehicles array
+    // Check data structure
+    if (!jsonData) {
+      throw new Error('Parsed JSON is null or undefined');
+    }
+    
+    // Extract vehicles array - use spread operator to make a new array copy
     let vehicleData: VehicleData[] = [];
     
     if (jsonData && jsonData.data && Array.isArray(jsonData.data)) {
-      vehicleData = [...jsonData.data]; // Create a new array to avoid references
+      // Create a completely new array to avoid reference issues
+      vehicleData = [...jsonData.data]; 
       console.log(`🚚 Found ${vehicleData.length} vehicles in the data.data property`);
     } else if (Array.isArray(jsonData)) {
-      vehicleData = [...jsonData]; // Create a new array to avoid references
+      vehicleData = [...jsonData];
       console.log(`🚚 Found ${vehicleData.length} vehicles in direct array format`);
     } else {
-      console.error("Unexpected data format:", JSON.stringify(jsonData).substring(0, 200) + "...");
+      console.error("Unexpected data format:", jsonData);
       throw new Error("Invalid data format: Could not find vehicle data array");
     }
     
@@ -61,15 +72,21 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
       throw new Error("No vehicle data found in the response");
     }
     
-    // Check for duplicate lorry IDs
-    const lorryIds = new Set();
-    const duplicates = [];
+    // Log data characteristics for debugging
+    console.log(`🔢 Data statistics:`);
+    console.log(`- Total number of entries: ${vehicleData.length}`);
+    console.log(`- First entry: ${JSON.stringify(vehicleData[0]).substring(0, 100)}...`);
+    console.log(`- Last entry: ${JSON.stringify(vehicleData[vehicleData.length - 1]).substring(0, 100)}...`);
+    
+    // Check for duplicate keys to identify potential overwriting
+    const lorryIds = new Map();
+    const duplicates: string[] = [];
     
     vehicleData.forEach((vehicle, index) => {
       if (lorryIds.has(vehicle.lorry)) {
         duplicates.push(vehicle.lorry);
       } else {
-        lorryIds.add(vehicle.lorry);
+        lorryIds.set(vehicle.lorry, index);
       }
     });
     
@@ -84,54 +101,15 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     
     if (incompleteVehicles.length > 0) {
       console.warn(`⚠️ Found ${incompleteVehicles.length} incomplete vehicle records`);
-    }
-    
-    // Log the complete data for verification
-    console.log(`✅ Successfully parsed ${vehicleData.length} vehicles from JSON`);
-    
-    // Verify we're getting complete data
-    const jsonString = JSON.stringify(vehicleData);
-    console.log(`📦 JSON data size: ${(jsonString.length / 1024).toFixed(2)} KB`);
-    
-    // Count vehicle types for debugging
-    const evReady = vehicleData.filter(v => v.max_95_perc <= 300);
-    const nonEvReady = vehicleData.filter(v => v.max_95_perc > 300);
-    
-    console.log(`📊 Fleet breakdown:`);
-    console.log(`- Total vehicles: ${vehicleData.length}`);
-    console.log(`- EV-ready vehicles: ${evReady.length}`);
-    console.log(`- Non-EV-ready vehicles: ${nonEvReady.length}`);
-    
-    // Log some vehicle samples from different parts of the array to verify full dataset
-    if (vehicleData.length > 0) {
-      console.log(`🚗 First vehicle: ${vehicleData[0].lorry}, Last vehicle: ${vehicleData[vehicleData.length - 1].lorry}`);
-      
-      if (vehicleData.length > 10) {
-        console.log(`🚗 5th vehicle: ${vehicleData[4].lorry}, 10th vehicle: ${vehicleData[9].lorry}`);
-      }
-      
-      if (vehicleData.length > 100) {
-        console.log(`🚗 50th vehicle: ${vehicleData[49].lorry}, 100th vehicle: ${vehicleData[99].lorry}`);
-      }
-      
-      if (vehicleData.length > 140) {
-        console.log(`🚗 140th vehicle: ${vehicleData[139].lorry}`);
-      }
-      
-      if (vehicleData.length > 145) {
-        console.log(`🚗 145th vehicle: ${vehicleData[144].lorry}`);
-      }
-      
-      if (vehicleData.length > 149) {
-        console.log(`🚗 150th vehicle: ${vehicleData[149].lorry}`);
-      }
+      console.log(`First incomplete record example: ${JSON.stringify(incompleteVehicles[0])}`);
     }
     
     const endTime = performance.now();
     console.log(`⏱️ Data fetching completed in ${(endTime - startTime).toFixed(2)}ms. Returning ${vehicleData.length} vehicles.`);
+    console.log(`Data fetch complete! Total vehicles: ${vehicleData.length}`);
     
-    // IMPORTANT: Return the FULL array without any slicing or truncation
-    return vehicleData;
+    // Return the complete array - important to keep the reference to a new array
+    return [...vehicleData];
   } catch (error: any) {
     console.error("❌ Error fetching vehicle data:", error);
     throw error;

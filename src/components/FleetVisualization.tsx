@@ -22,26 +22,25 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleData | null>(null);
   
-  // Always use this external URL to ensure we get the full dataset
-  const externalDataUrl = "https://route-ready-viz.vercel.app/fleetData.json";
-  
-  // Use the data source - always prioritizing the external URL
+  // Use the fleetData hook to load and manage vehicle data
   const { vehicles, loading, error, usingMockData, fleetStats } = useFleetData();
   
   // Track vehicles count for debugging
   const [debugInfo, setDebugInfo] = useState({
     vehicleCount: 0,
-    lastLogged: new Date()
+    lastLogged: new Date(),
+    dataSourceUrl: "https://route-ready-viz.vercel.app/fleetData.json"
   });
 
-  // Additional logging for data visibility
+  // Log data for debugging
   useEffect(() => {
     console.log(`🔄 [FleetVisualization] Vehicles count changed: ${vehicles.length}`);
     console.log(`📊 [FleetVisualization] Stats: ${fleetStats.evReadyCount}/${fleetStats.totalVehicles} vehicles are EV-ready`);
     
     setDebugInfo({
       vehicleCount: vehicles.length,
-      lastLogged: new Date()
+      lastLogged: new Date(),
+      dataSourceUrl: "https://route-ready-viz.vercel.app/fleetData.json"
     });
     
     if (vehicles.length > 0) {
@@ -82,7 +81,8 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
     <div className="w-full max-w-7xl mx-auto bg-white rounded-lg shadow-sm p-6">
       {/* Debug info */}
       <div className="text-xs text-gray-400 mb-2">
-        Loaded {vehicles.length} vehicles • Last updated: {debugInfo.lastLogged.toLocaleTimeString()}
+        Loaded {vehicles.length} vehicles • Last updated: {debugInfo.lastLogged.toLocaleTimeString()} • 
+        Source: {debugInfo.dataSourceUrl}
       </div>
       
       <FleetStats 

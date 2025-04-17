@@ -34,8 +34,10 @@ export const useFleetData = (jsonUrl?: string) => {
         const currentAttempt = ++loadAttempts.current;
         console.log(`⏳ [Attempt ${currentAttempt}] Loading fleet data from: ${dataUrl}`);
         
+        // Fetch the vehicle data as a new array
         const vehicleData = await fetchVehicleData(dataUrl);
         
+        // Validate the data
         if (!vehicleData || vehicleData.length === 0) {
           throw new Error("No vehicle data was returned");
         }
@@ -44,7 +46,9 @@ export const useFleetData = (jsonUrl?: string) => {
         vehiclesCountRef.current = vehicleData.length;
         
         console.log(`✅ [Attempt ${currentAttempt}] Successfully loaded ALL ${vehicleData.length} vehicles from ${dataUrl}`);
+        console.log(`📱 Vehicle data details: First ID=${vehicleData[0]?.lorry}, Last ID=${vehicleData[vehicleData.length-1]?.lorry}`);
         
+        // Calculate fleet stats
         const stats = getFleetEVReadiness(vehicleData);
         
         console.log(`🔄 [CRITICAL] Setting state with ${vehicleData.length} vehicles`);
@@ -52,16 +56,18 @@ export const useFleetData = (jsonUrl?: string) => {
         
         // Important: Create a completely new array to avoid any reference issues
         const vehiclesToSet = [...vehicleData];
+        
+        // Set state with the new data
         setVehicles(vehiclesToSet);
         setFleetStats(stats);
         
         // Verify after state update
         setTimeout(() => {
-          console.log(`🔍 [State Verify] Vehicles array in state has ${vehiclesToSet.length} vehicles`);
-          if (vehiclesToSet.length !== vehiclesCountRef.current) {
-            console.error(`⚠️ Possible state update issue: Expected ${vehiclesCountRef.current} vehicles but have ${vehiclesToSet.length}`);
+          console.log(`🔍 [State Verify] Vehicles array in state has ${vehicles.length} vehicles`);
+          if (vehicles.length !== vehiclesCountRef.current) {
+            console.log(`⚠️ State update discrepancy: Expected ${vehiclesCountRef.current} vehicles but have ${vehicles.length}`);
           }
-        }, 0);
+        }, 100);
         
         setLoading(false);
         toast({
