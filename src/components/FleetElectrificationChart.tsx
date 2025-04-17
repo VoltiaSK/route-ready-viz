@@ -18,65 +18,85 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
   const chartRef = useRef<HTMLDivElement>(null);
   const [isAnimated, setIsAnimated] = useState(false);
   
-  // Animate icons one by one
+  console.log(`Chart rendering with ${evReadyVehicles.length} EV-ready and ${nonEvReadyVehicles.length} non-EV-ready vehicles`);
+  
+  // Main animation sequence
   useEffect(() => {
-    if (chartRef.current && !isAnimated) {
-      // Animate the split between EV-ready and non-EV-ready vehicles
-      gsap.fromTo(
+    if (chartRef.current) {
+      // Step 1: Fade in the entire chart
+      const masterTimeline = gsap.timeline();
+      
+      masterTimeline.fromTo(
+        chartRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.8, ease: "power2.inOut" }
+      );
+      
+      // Step 2: Animate the bar filling to show the proportions (after fade-in)
+      masterTimeline.fromTo(
         ".ev-ready-section",
         { width: "0%" },
         { 
           width: `${evReadyPercentage}%`, 
-          duration: 1.5, 
-          ease: "power2.inOut",
-          onComplete: () => setIsAnimated(true)
+          duration: 2, 
+          ease: "power2.inOut"
         }
       );
       
-      gsap.fromTo(
+      masterTimeline.fromTo(
         ".non-ev-ready-section",
-        { width: "100%" },
+        { width: "0%" },
         { 
           width: `${100 - evReadyPercentage}%`, 
-          duration: 1.5, 
+          duration: 2, 
           ease: "power2.inOut" 
-        }
+        },
+        "<" // Start at the same time as the previous animation
       );
       
-      // Animate vehicle icons one by one with slight delay
-      const evIcons = document.querySelectorAll('.ev-ready .vehicle-icon');
-      evIcons.forEach((icon, index) => {
-        gsap.fromTo(
-          icon,
-          { opacity: 0, scale: 0.5 },
-          { 
-            opacity: 0.85, 
-            scale: 1,
-            duration: 0.2, 
-            delay: 1.5 + (index * 0.01), // Small delay between each icon
-            ease: "back.out(1.7)" 
-          }
-        );
+      // Step 3: Animate each vehicle icon one by one with slight delay
+      masterTimeline.add(() => {
+        // Animate EV-ready vehicle icons (left-aligned)
+        const evIcons = document.querySelectorAll('.ev-ready .vehicle-icon');
+        evIcons.forEach((icon, index) => {
+          gsap.fromTo(
+            icon,
+            { opacity: 0, scale: 0 },
+            { 
+              opacity: 0.85, 
+              scale: 1,
+              duration: 0.15, 
+              delay: index * 0.01, // Small sequential delay between each icon
+              ease: "back.out(1.7)" 
+            }
+          );
+        });
+        
+        // Animate non-EV-ready vehicle icons
+        const nonEvIcons = document.querySelectorAll('.non-ev-ready .vehicle-icon');
+        nonEvIcons.forEach((icon, index) => {
+          gsap.fromTo(
+            icon,
+            { opacity: 0, scale: 0 },
+            { 
+              opacity: 0.6, 
+              scale: 1,
+              duration: 0.15, 
+              delay: index * 0.01, // Small sequential delay between each icon
+              ease: "back.out(1.7)" 
+            }
+          );
+        });
       });
       
-      const nonEvIcons = document.querySelectorAll('.non-ev-ready .vehicle-icon');
-      nonEvIcons.forEach((icon, index) => {
-        gsap.fromTo(
-          icon,
-          { opacity: 0, scale: 0.5 },
-          { 
-            opacity: 0.6, 
-            scale: 1,
-            duration: 0.2, 
-            delay: 1.5 + (index * 0.01), // Small delay between each icon
-            ease: "back.out(1.7)" 
-          }
-        );
+      // Step 4: Start the pulsating effect after all animations complete
+      masterTimeline.add(() => {
+        setIsAnimated(true);
       });
     }
-  }, [chartRef, isAnimated, evReadyPercentage, vehicles.length]);
+  }, [evReadyPercentage, evReadyVehicles.length, nonEvReadyVehicles.length]);
 
-  // Create pulsating effect for the EV-ready section
+  // Pulsating gradient effect for the EV-ready section
   useEffect(() => {
     if (isAnimated) {
       gsap.to(".ev-ready-gradient", {
@@ -108,7 +128,8 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
         <div
           className="ev-ready-section h-full transition-all duration-500 ease-in-out relative overflow-hidden"
           style={{ 
-            width: isAnimated ? `${evReadyPercentage}%` : "0%",
+            width: "0%", // Start at 0 for animation
+            minWidth: "0%",
             borderRadius: evReadyPercentage === 100 ? '8px' : '8px 0 0 8px',
             backgroundColor: "#F2FCE2", // Base color
           }}
@@ -117,18 +138,18 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
           <div 
             className="ev-ready-gradient absolute inset-0 z-10 opacity-0"
             style={{ 
-              background: "linear-gradient(45deg, rgba(155,135,245,0.4) 0%, rgba(155,135,245,0) 70%)",
+              background: "linear-gradient(45deg, rgba(155,245,155,0.4) 0%, rgba(155,245,155,0) 70%)",
             }}
           />
           
-          <div className="ev-ready flex flex-wrap justify-center items-center h-full py-2 px-1 overflow-hidden z-20 relative">
+          <div className="ev-ready flex flex-wrap justify-start items-center h-full py-2 px-1 overflow-hidden z-20 relative">
             {evReadyVehicles.map((vehicle, index) => (
               <div 
                 key={`ev-${vehicle.lorry}-${index}`}
-                className="vehicle-icon m-0.5 text-green-700 opacity-0"
+                className="vehicle-icon m-px text-green-700 opacity-0"
                 title={`Vehicle ${vehicle.lorry}: ${vehicle.max_95_perc}km`}
               >
-                <CarFront size={10} strokeWidth={1.5} />
+                <CarFront size={8} strokeWidth={1.5} />
               </div>
             ))}
           </div>
@@ -138,7 +159,8 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
         <div
           className="non-ev-ready-section bg-gray-300 h-full transition-all duration-500 ease-in-out"
           style={{ 
-            width: isAnimated ? `${100 - evReadyPercentage}%` : "100%",
+            width: "0%", // Start at 0 for animation
+            minWidth: "0%",
             borderRadius: evReadyPercentage === 0 ? '8px' : '0 8px 8px 0'
           }}
         >
@@ -146,10 +168,10 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
             {nonEvReadyVehicles.map((vehicle, index) => (
               <div 
                 key={`nonev-${vehicle.lorry}-${index}`}
-                className="vehicle-icon m-0.5 text-gray-600 opacity-0"
+                className="vehicle-icon m-px text-gray-600 opacity-0"
                 title={`Vehicle ${vehicle.lorry}: ${vehicle.max_95_perc}km`}
               >
-                <CarFront size={10} strokeWidth={1.5} />
+                <CarFront size={8} strokeWidth={1.5} />
               </div>
             ))}
           </div>

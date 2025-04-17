@@ -46,7 +46,7 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
     >
       {vehicles.map((vehicle, index) => (
         <div 
-          key={`grid-${vehicle.lorry}-${index}`} // Added index to ensure uniqueness
+          key={`grid-${vehicle.lorry}-${index}`} 
           className="transform transition-transform duration-150 hover:scale-105 relative z-10"
           onClick={() => {
             console.log("Vehicle card clicked:", vehicle.lorry);

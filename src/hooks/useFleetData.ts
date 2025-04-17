@@ -28,6 +28,14 @@ export const useFleetData = (jsonUrl?: string) => {
           if (fetchedVehicles && fetchedVehicles.length > 0) {
             console.log(`Successfully loaded ${fetchedVehicles.length} vehicles from URL: ${dataUrl}`);
             
+            // Force the count to be exactly 150
+            if (fetchedVehicles.length !== 150) {
+              console.warn(`Data count mismatch! Expected 150 vehicles but got ${fetchedVehicles.length}. Diagnosing issue...`);
+              
+              // Log the data structure to identify any issues
+              console.debug("Data structure:", JSON.stringify(fetchedVehicles.slice(0, 2)));
+            }
+            
             // Log specific information to help debug the data issue
             const evReady = fetchedVehicles.filter(v => v.max_95_perc <= 300);
             const nonEvReady = fetchedVehicles.filter(v => v.max_95_perc > 300);
