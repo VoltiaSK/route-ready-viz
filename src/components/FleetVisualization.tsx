@@ -78,6 +78,8 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
     />;
   }
 
+  console.log(`[FleetVisualization render] Displaying ${vehicles.length} vehicles`);
+
   return (
     <div className="w-full max-w-7xl mx-auto bg-white rounded-lg shadow-sm p-6">
       {/* Debug info */}

@@ -15,7 +15,8 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     const response = await fetch(url, {
       cache: 'no-store', // Prevent caching issues
       headers: {
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Cache-Control': 'no-cache'
       },
       mode: 'cors', // Enable CORS for external URLs
       signal: controller.signal,
@@ -41,7 +42,7 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     let jsonData;
     try {
       jsonData = JSON.parse(responseText);
-      console.log(`💾 Successfully parsed JSON data`);
+      console.log(`💾 Successfully parsed JSON data, checking structure...`);
     } catch (parseError: any) {
       console.error("JSON parsing error:", parseError);
       throw new Error(`Invalid JSON format: ${parseError.message}`);
@@ -72,11 +73,10 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
       throw new Error("No vehicle data found in the response");
     }
     
-    // Log data characteristics for debugging
-    console.log(`🔢 Data statistics:`);
-    console.log(`- Total number of entries: ${vehicleData.length}`);
-    console.log(`- First entry: ${JSON.stringify(vehicleData[0]).substring(0, 100)}...`);
-    console.log(`- Last entry: ${JSON.stringify(vehicleData[vehicleData.length - 1]).substring(0, 100)}...`);
+    // Log data characteristics for debugging - log full count to verify all records
+    console.log(`🔢 Full vehicle count: ${vehicleData.length}`);
+    console.log(`- First 5 IDs: ${vehicleData.slice(0, 5).map(v => v.lorry).join(', ')}`);
+    console.log(`- Last 5 IDs: ${vehicleData.slice(-5).map(v => v.lorry).join(', ')}`);
     
     // Check for duplicate keys to identify potential overwriting
     const lorryIds = new Map();
@@ -105,11 +105,11 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     }
     
     const endTime = performance.now();
-    console.log(`⏱️ Data fetching completed in ${(endTime - startTime).toFixed(2)}ms. Returning ${vehicleData.length} vehicles.`);
-    console.log(`Data fetch complete! Total vehicles: ${vehicleData.length}`);
+    console.log(`⏱️ Data fetching completed in ${(endTime - startTime).toFixed(2)}ms.`);
+    console.log(`🔄 RETURNING FULL DATASET with ${vehicleData.length} vehicles`);
     
     // Return the complete array - important to keep the reference to a new array
-    return [...vehicleData];
+    return vehicleData;
   } catch (error: any) {
     console.error("❌ Error fetching vehicle data:", error);
     throw error;
