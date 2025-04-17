@@ -49,10 +49,17 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
   const evReadyVehicles = vehicles.filter(isVehicleEVReady);
   const nonEvReadyVehicles = vehicles.filter(vehicle => !isVehicleEVReady(vehicle));
 
+  const evReadyCount = evReadyVehicles.length;
+  const totalVehicles = vehicles.length;
+  const evReadyFleetPercentage = Math.round((evReadyCount / totalVehicles) * 100);
+
   return (
     <div className="mb-8 p-6 bg-white rounded-lg shadow-sm">
       <h2 className="text-lg font-bold mb-2 text-fleet-viz-dark">Fleet Electrification Readiness</h2>
-      <p className="text-sm text-gray-500 mb-4">{evReadyPercentage}% of vehicles are EV-ready based on their driving patterns</p>
+      <div className="flex flex-wrap gap-1 text-sm text-gray-500 mb-4">
+        <p>{evReadyPercentage}% of routes are covered by EV-ready vehicles</p>
+        <p className="text-xs">({evReadyFleetPercentage}% of the fleet / {evReadyCount} vehicles)</p>
+      </div>
       
       <div ref={chartRef} className="relative h-24 flex items-center mb-2">
         {/* EV Ready vehicles (with animation) */}
@@ -101,11 +108,11 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
       <div className="flex justify-between text-xs text-gray-500">
         <div className="flex items-center">
           <span className="inline-block w-3 h-3 rounded-full bg-viz-primary mr-1.5"></span>
-          EV Ready ({evReadyVehicles.length})
+          EV Ready ({evReadyVehicles.length} vehicles)
         </div>
         <div className="flex items-center">
           <span className="inline-block w-3 h-3 rounded-full bg-gray-300 mr-1.5"></span>
-          Needs Additional Range ({nonEvReadyVehicles.length})
+          Needs Additional Range ({nonEvReadyVehicles.length} vehicles)
         </div>
       </div>
     </div>

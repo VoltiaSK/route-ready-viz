@@ -21,11 +21,11 @@ const FleetAnalysis = ({ vehicles, fleetStats }: FleetAnalysisProps) => {
       
       <div className="prose max-w-none">
         <p className="text-lg mb-4">
-          <strong>Despite some high-mileage outliers, the overwhelming majority of daily routes in this 150-car ICE fleet fall well within the range of current EV capabilities — making {fleetStats.evReadyPercentage}% of them ready for electrification.</strong>
+          <strong>While only {fleetStats.evReadyCount} vehicles ({Math.round(fleetStats.evReadyCount/fleetStats.totalVehicles*100)}% of the fleet) are ready for electrification, these vehicles handle {fleetStats.evReadyPercentage}% of all routes in the fleet.</strong>
         </p>
         
         <p className="mb-4">
-          The data analysis reveals that a significant majority of vehicles in this fleet operate within daily ranges that are perfectly suited for electric vehicle capabilities. With most modern EVs capable of ranges between 250-300km on a single charge, {fleetStats.evReadyPercentage}% of this fleet's daily operations could be transitioned without operational disruption.
+          The data analysis reveals that while a minority of vehicles in this fleet are suitable for immediate electrification, these vehicles actually handle the vast majority of routes. With most modern EVs capable of ranges between 250-300km on a single charge, {fleetStats.evReadyPercentage}% of this fleet's daily operations could be electrified by focusing on just {fleetStats.evReadyCount} vehicles.
         </p>
         
         <div className="bg-white rounded-lg shadow-md p-4 my-6 hover:shadow-lg transition-shadow">
@@ -37,7 +37,7 @@ const FleetAnalysis = ({ vehicles, fleetStats }: FleetAnalysisProps) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </span>
-              <span>The average daily distance driven across the fleet is {avgDailyDistance} kilometers.</span>
+              <span>The EV-ready vehicles ({fleetStats.evReadyCount}) handle {fleetStats.evReadyPercentage}% of all routes, making electrification highly impactful despite focusing on a small portion of the fleet.</span>
             </li>
             <li className="flex items-start">
               <span className="inline-block bg-viz-primary text-white rounded-full p-1 mr-2 mt-0.5">
@@ -45,7 +45,7 @@ const FleetAnalysis = ({ vehicles, fleetStats }: FleetAnalysisProps) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </span>
-              <span>95% of daily trips fall under {avg95PercRange} kilometers.</span>
+              <span>The average daily distance driven across the fleet is {avgDailyDistance} kilometers, with significant variance between EV-ready and non-EV-ready vehicles.</span>
             </li>
             <li className="flex items-start">
               <span className="inline-block bg-viz-primary text-white rounded-full p-1 mr-2 mt-0.5">
@@ -53,13 +53,13 @@ const FleetAnalysis = ({ vehicles, fleetStats }: FleetAnalysisProps) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </span>
-              <span>Highway driving accounts for approximately {avgHighwayPercentage}% of total distance, favorable for EV efficiency.</span>
+              <span>Non-EV-ready vehicles show extreme variability with maximum distances often exceeding 800km, making them challenging candidates for electrification without operational changes.</span>
             </li>
           </ul>
         </div>
         
         <p>
-          This analysis demonstrates that transitioning to an electric fleet would not only be environmentally beneficial but operationally feasible for the vast majority of vehicles in this fleet. The few outliers with longer daily routes could be addressed through strategic charging solutions or by maintaining a small number of conventional vehicles for specific long-range needs.
+          This analysis demonstrates a strategic approach to fleet electrification would be most effective: focus first on the {fleetStats.evReadyCount} vehicles that handle {fleetStats.evReadyPercentage}% of all fleet operations. This phased approach would deliver significant environmental benefits while avoiding the operational challenges of the high-variability, long-range vehicles that make up the remainder of the fleet.
         </p>
       </div>
     </div>
