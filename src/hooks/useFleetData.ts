@@ -4,10 +4,7 @@ import { VehicleData } from "@/types/VehicleData";
 import { fetchVehicleData, getFleetEVReadiness } from "@/utils/dataFetcher";
 import { toast } from "@/components/ui/use-toast";
 
-// Force using the external data URL to ensure we're getting the complete dataset
-const EXTERNAL_DATA_URL = "https://route-ready-viz.vercel.app/fleetData.json";
-
-export const useFleetData = (jsonUrl?: string) => {
+export const useFleetData = (jsonUrl: string = "fleetData150.json") => {
   const [vehicles, setVehicles] = useState<VehicleData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,8 +26,7 @@ export const useFleetData = (jsonUrl?: string) => {
       setUsingMockData(false);
       
       try {
-        // Always use the external data URL to ensure consistent data
-        const dataUrl = EXTERNAL_DATA_URL;
+        const dataUrl = jsonUrl;
         const currentAttempt = ++loadAttempts.current;
         console.log(`⏳ [Attempt ${currentAttempt}] Loading fleet data from: ${dataUrl}`);
         
@@ -61,14 +57,10 @@ export const useFleetData = (jsonUrl?: string) => {
         setVehicles(vehiclesToSet);
         setFleetStats(stats);
         
-        // FIXED: The state verification was using stale closure values
-        // React state updates are asynchronous, so checking 'vehicles' immediately won't show the new values
-        // Remove the verification code that causes confusion in logs
-        
         setLoading(false);
         toast({
           title: "Fleet data loaded",
-          description: `Successfully loaded ${vehicleData.length} vehicles from external source`,
+          description: `Successfully loaded ${vehicleData.length} vehicles from ${dataUrl}`,
           duration: 5000,
         });
       } catch (err: any) {
@@ -94,7 +86,7 @@ export const useFleetData = (jsonUrl?: string) => {
     };
     
     loadData();
-  }, []);  // Remove jsonUrl from dependencies to prevent reloading
+  }, [jsonUrl]);
 
   useEffect(() => {
     // This will run after each state update with the latest values

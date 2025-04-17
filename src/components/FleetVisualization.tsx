@@ -11,6 +11,7 @@ import FleetElectrificationChart from "@/components/FleetElectrificationChart";
 import VehicleDetailModal from "@/components/VehicleDetailModal";
 import { VehicleData } from "@/types/VehicleData";
 import { toast } from "@/components/ui/use-toast";
+import { useFleetFilters } from "@/hooks/useFleetFilters";
 
 interface FleetVisualizationProps {
   dataSourceUrl?: string;
@@ -23,13 +24,30 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleData | null>(null);
   
   // Use the fleetData hook to load and manage vehicle data
-  const { vehicles, loading, error, usingMockData, fleetStats } = useFleetData();
+  // Try the new JSON file first
+  const { vehicles, loading, error, usingMockData, fleetStats } = useFleetData(
+    jsonUrl || "fleetData150.json"
+  );
+  
+  // Use the fleetFilters hook to manage filtering and pagination
+  const {
+    filteredVehicles,
+    currentVehicles,
+    totalPages,
+    currentPage,
+    searchTerm,
+    filterBy,
+    handlePageChange,
+    handleSearchChange,
+    handleFilterChange,
+    handleClearFilters
+  } = useFleetFilters(vehicles);
   
   // Track vehicles count for debugging
   const [debugInfo, setDebugInfo] = useState({
     vehicleCount: 0,
     lastLogged: new Date(),
-    dataSourceUrl: "https://route-ready-viz.vercel.app/fleetData.json"
+    dataSourceUrl: jsonUrl || "fleetData150.json"
   });
 
   // Log data for debugging
@@ -42,7 +60,7 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
       setDebugInfo({
         vehicleCount: vehicles.length,
         lastLogged: new Date(),
-        dataSourceUrl: "https://route-ready-viz.vercel.app/fleetData.json"
+        dataSourceUrl: jsonUrl || "fleetData150.json"
       });
       
       toast({
@@ -51,7 +69,7 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
         duration: 3000,
       });
     }
-  }, [vehicles, fleetStats]);
+  }, [vehicles, fleetStats, jsonUrl]);
 
   const handleSelectVehicle = (vehicle: VehicleData) => {
     console.log("Vehicle selected:", vehicle.lorry);
@@ -112,17 +130,17 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
         </TabsList>
         <TabsContent value="overview">
           <FleetOverview 
-            currentVehicles={vehicles}
-            filteredVehicles={vehicles}
+            currentVehicles={currentVehicles}
+            filteredVehicles={filteredVehicles}
             totalVehicles={fleetStats.totalVehicles}
-            currentPage={1}
-            totalPages={1}
-            searchTerm=""
-            filterBy="all"
-            onSearchChange={() => {}}
-            onFilterChange={() => {}}
-            onClearFilters={() => {}}
-            onPageChange={() => {}}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            searchTerm={searchTerm}
+            filterBy={filterBy}
+            onSearchChange={handleSearchChange}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
+            onPageChange={handlePageChange}
             onSelectVehicle={handleSelectVehicle}
           />
         </TabsContent>
