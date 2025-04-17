@@ -47,8 +47,11 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
       }
     }
     
-    // Don't validate fleet size as we might have different JSON files with different counts
+    // Verify we have the right number of vehicles
     console.log(`Successfully loaded ${vehicleData.length} vehicles`);
+    if (vehicleData.length !== 150) {
+      console.warn(`Warning: Expected 150 vehicles but found ${vehicleData.length}`);
+    }
     
     return vehicleData;
   } catch (error: any) {

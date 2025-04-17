@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { VehicleData } from "@/types/VehicleData";
 import { fetchVehicleData, getFleetEVReadiness } from "@/utils/dataFetcher";
 
-// Import JSON data from public folder
 export const useFleetData = (jsonUrl?: string) => {
   const [vehicles, setVehicles] = useState<VehicleData[]>([]);
   const [loading, setLoading] = useState(true);

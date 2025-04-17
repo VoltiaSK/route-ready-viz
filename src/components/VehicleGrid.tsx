@@ -45,7 +45,7 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
     >
       {vehicles.map((vehicle) => (
         <div 
-          key={vehicle.lorry}
+          key={`grid-${vehicle.lorry}`} // Use unique key with prefix to avoid duplicates
           className="transform transition-transform duration-150 hover:scale-105 relative z-10"
           onClick={() => {
             console.log("Vehicle card clicked:", vehicle.lorry);
@@ -62,7 +62,10 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
         >
           <VehicleCard 
             vehicle={vehicle} 
-            onClick={() => onSelectVehicle(vehicle)} 
+            onClick={() => {
+              console.log("Vehicle card component clicked:", vehicle.lorry);
+              onSelectVehicle(vehicle);
+            }} 
           />
         </div>
       ))}
