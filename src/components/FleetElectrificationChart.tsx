@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { VehicleData } from "@/types/VehicleData";
 import { isVehicleEVReady } from "@/utils/dataFetcher";
-import { Car } from "lucide-react";
+import { CarFront } from "lucide-react";
 
 interface FleetElectrificationChartProps {
   vehicles: VehicleData[];
@@ -72,14 +72,14 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
             overflow: evReadyPercentage === 100 ? 'hidden' : 'visible',
           }}
         >
-          <div className="flex flex-wrap justify-center items-center h-full py-2 px-3 overflow-hidden">
+          <div className="flex flex-wrap justify-center items-center h-full py-2 px-1 overflow-hidden">
             {evReadyVehicles.map((vehicle) => (
               <div 
                 key={vehicle.lorry}
-                className="vehicle-icon ev-ready m-1 text-white opacity-70 hover:opacity-100 transition-opacity"
+                className="vehicle-icon ev-ready m-0.5 text-white opacity-70 hover:opacity-100 transition-opacity"
                 title={`Vehicle ${vehicle.lorry}: ${vehicle.max_95_perc}km`}
               >
-                <Car size={16} strokeWidth={1.5} />
+                <CarFront size={12} strokeWidth={1.5} />
               </div>
             ))}
           </div>
@@ -94,14 +94,14 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
             borderRadius: evReadyPercentage === 0 ? '8px' : '0 8px 8px 0'
           }}
         >
-          <div className="flex flex-wrap justify-center items-center h-full py-2 px-3 overflow-hidden">
+          <div className="flex flex-wrap justify-center items-center h-full py-2 px-1 overflow-hidden">
             {nonEvReadyVehicles.map((vehicle) => (
               <div 
                 key={vehicle.lorry}
-                className="vehicle-icon m-1 text-gray-600 opacity-50 hover:opacity-80 transition-opacity"
+                className="vehicle-icon m-0.5 text-gray-600 opacity-50 hover:opacity-80 transition-opacity"
                 title={`Vehicle ${vehicle.lorry}: ${vehicle.max_95_perc}km`}
               >
-                <Car size={16} strokeWidth={1.5} />
+                <CarFront size={12} strokeWidth={1.5} />
               </div>
             ))}
           </div>

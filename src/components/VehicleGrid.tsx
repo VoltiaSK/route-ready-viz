@@ -62,10 +62,7 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
         >
           <VehicleCard 
             vehicle={vehicle} 
-            onClick={() => {
-              console.log("Vehicle card component clicked:", vehicle.lorry);
-              onSelectVehicle(vehicle);
-            }} 
+            onClick={() => onSelectVehicle(vehicle)} 
           />
         </div>
       ))}

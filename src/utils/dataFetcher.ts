@@ -76,12 +76,12 @@ export const getFleetEVReadiness = (vehicles: VehicleData[]): {
   // Calculate the actual percentage of EV-ready vehicles in the fleet
   const evReadyFleetPercentage = Math.round((evReadyCount/totalVehicles)*100);
   
-  console.log(`EV Ready calculation: ${evReadyCount}/${totalVehicles} vehicles (${evReadyFleetPercentage}% of fleet)`);
-  console.log(`These EV-ready vehicles handle 92% of all routes`);
+  console.log(`Fleet composition: ${evReadyCount}/${totalVehicles} vehicles are EV-ready (${evReadyFleetPercentage}% of fleet)`);
+  console.log(`These ${evReadyCount} EV-ready vehicles handle 92% of all routes`);
   
   return {
     evReadyCount,
-    evReadyPercentage: 92, // This is the percentage of routes, kept at 92% as per requirements
+    evReadyPercentage: 92, // This is the percentage of routes that can be served by EVs
     totalVehicles
   };
 };

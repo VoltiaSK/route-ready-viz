@@ -21,6 +21,7 @@ export const useFleetData = (jsonUrl?: string) => {
       try {
         // Use the public JSON file URL if not provided
         const dataUrl = jsonUrl || '/fleetData.json';
+        console.log("Attempting to load data from:", dataUrl);
         
         try {
           const fetchedVehicles = await fetchVehicleData(dataUrl);
@@ -34,6 +35,8 @@ export const useFleetData = (jsonUrl?: string) => {
             setUsingMockData(false);
             setLoading(false);
             return;
+          } else {
+            throw new Error("Fetched vehicle data is empty");
           }
         } catch (err) {
           console.error("Failed to load data from URL:", err);
