@@ -47,7 +47,7 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
       }
     }
     
-    // Verify we have the right number of vehicles
+    // Verify we have vehicles
     console.log(`Successfully loaded ${vehicleData.length} vehicles`);
     
     // Count EV ready vs non-EV ready
@@ -58,10 +58,6 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     // Double check the total matches
     if (evReady.length + nonEvReady.length !== vehicleData.length) {
       console.error("CRITICAL ERROR: Vehicle counts don't add up correctly!");
-    }
-    
-    if (vehicleData.length !== 150) {
-      console.warn(`Warning: Expected 150 vehicles but found ${vehicleData.length}`);
     }
     
     return vehicleData;
