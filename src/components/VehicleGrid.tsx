@@ -1,4 +1,3 @@
-
 import { VehicleData } from "@/types/VehicleData";
 import VehicleCard from "./VehicleCard";
 import EmptyState from "./EmptyState";
@@ -38,11 +37,6 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
   }
 
   console.log(`Rendering VehicleGrid with ${vehicles.length} vehicles`);
-  
-  // Log warning if we're showing less than the full dataset
-  if (vehicles.length < 150) {
-    console.warn(`VehicleGrid is showing ${vehicles.length} vehicles, which is less than the expected 150 vehicles.`);
-  }
 
   return (
     <div 
@@ -53,8 +47,8 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
         <div 
           key={vehicle.lorry}
           className="transform transition-transform duration-150 hover:scale-105 relative z-10"
-          onClick={(e) => {
-            e.stopPropagation();
+          onClick={() => {
+            console.log("Vehicle card clicked:", vehicle.lorry);
             onSelectVehicle(vehicle);
           }}
           role="button"
@@ -68,7 +62,10 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
         >
           <VehicleCard 
             vehicle={vehicle} 
-            onClick={() => onSelectVehicle(vehicle)} 
+            onClick={() => {
+              console.log("Vehicle card component clicked:", vehicle.lorry);
+              onSelectVehicle(vehicle);
+            }} 
           />
         </div>
       ))}
@@ -92,6 +89,11 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
           /* Ensure cards are clickable in embedded contexts */
           .embedded-grid > div:hover {
             z-index: 20;
+          }
+          
+          /* Improved clickability */
+          [role="button"] {
+            cursor: pointer;
           }
         `}
       </style>

@@ -32,10 +32,12 @@ const VehicleDetailModal = ({ vehicle, onClose }: VehicleDetailModalProps) => {
   return (
     <Dialog 
       open={true} 
-      onOpenChange={(open) => !open && onClose()}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
       modal={true}
     >
-      <DialogOverlay className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm" />
+      <DialogOverlay className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm" onClick={onClose} />
       <DialogContent 
         className="fixed left-[50%] top-[50%] z-50 w-full max-w-md translate-x-[-50%] translate-y-[-50%] p-0 border-none bg-transparent shadow-none"
         aria-labelledby="vehicle-detail-title" 

@@ -8,17 +8,30 @@ import FleetStats from "@/components/FleetStats";
 import FleetOverview from "@/components/FleetOverview";
 import FleetAnalysis from "@/components/FleetAnalysis";
 import FleetElectrificationChart from "@/components/FleetElectrificationChart";
+import VehicleDetailModal from "@/components/VehicleDetailModal";
+import { VehicleData } from "@/types/VehicleData";
 
 interface FleetVisualizationProps {
   dataSourceUrl?: string;
-  jsonUrl?: string; // Add jsonUrl prop to match what's used in App.tsx
-  className?: string; // Add className prop to match what's used in webComponents
+  jsonUrl?: string;
+  className?: string;
 }
 
 const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps) => {
   const [activeTab, setActiveTab] = useState("overview");
+  const [selectedVehicle, setSelectedVehicle] = useState<VehicleData | null>(null);
+  
   // Use either dataSourceUrl or jsonUrl (for backward compatibility)
   const { vehicles, loading, error, usingMockData, fleetStats } = useFleetData(jsonUrl || dataSourceUrl);
+
+  const handleSelectVehicle = (vehicle: VehicleData) => {
+    console.log("Vehicle selected:", vehicle.lorry);
+    setSelectedVehicle(vehicle);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedVehicle(null);
+  };
 
   if (loading) {
     return <LoadingState />;
@@ -65,7 +78,7 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
             onFilterChange={() => {}}
             onClearFilters={() => {}}
             onPageChange={() => {}}
-            onSelectVehicle={() => {}}
+            onSelectVehicle={handleSelectVehicle}
           />
         </TabsContent>
         <TabsContent value="analysis">
@@ -75,6 +88,14 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
           />
         </TabsContent>
       </Tabs>
+
+      {/* Vehicle Detail Modal */}
+      {selectedVehicle && (
+        <VehicleDetailModal 
+          vehicle={selectedVehicle} 
+          onClose={handleCloseModal} 
+        />
+      )}
     </div>
   );
 };

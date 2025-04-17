@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from "react";
 import { VehicleData } from "@/types/VehicleData";
-import { fetchVehicleData, getFleetEVReadiness, isVehicleEVReady } from "@/utils/dataFetcher";
-import fleetDataJson from "@/FleetData/fleetData.json";
+import { fetchVehicleData, getFleetEVReadiness } from "@/utils/dataFetcher";
 
+// Import JSON data from public folder
 export const useFleetData = (jsonUrl?: string) => {
   const [vehicles, setVehicles] = useState<VehicleData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,51 +19,26 @@ export const useFleetData = (jsonUrl?: string) => {
     const loadData = async () => {
       setLoading(true);
       try {
-        // If jsonUrl is provided, try to fetch from there first
-        if (jsonUrl) {
-          try {
-            const fetchedVehicles = await fetchVehicleData(jsonUrl);
-            
-            if (fetchedVehicles && fetchedVehicles.length > 0) {
-              console.log(`Successfully loaded ${fetchedVehicles.length} vehicles from external URL: ${jsonUrl}`);
-              setVehicles(fetchedVehicles);
-              const stats = getFleetEVReadiness(fetchedVehicles);
-              setFleetStats(stats);
-              setError(null);
-              setUsingMockData(false);
-              setLoading(false);
-              return;
-            }
-          } catch (err) {
-            console.error("Failed to load data from external URL:", err);
-            // Continue to use internal data
+        // Use the public JSON file URL if not provided
+        const dataUrl = jsonUrl || '/fleetData.json';
+        
+        try {
+          const fetchedVehicles = await fetchVehicleData(dataUrl);
+          
+          if (fetchedVehicles && fetchedVehicles.length > 0) {
+            console.log(`Successfully loaded ${fetchedVehicles.length} vehicles from URL: ${dataUrl}`);
+            setVehicles(fetchedVehicles);
+            const stats = getFleetEVReadiness(fetchedVehicles);
+            setFleetStats(stats);
+            setError(null);
+            setUsingMockData(false);
+            setLoading(false);
+            return;
           }
-        }
-
-        // Use internal data from the imported JSON file
-        if (fleetDataJson && fleetDataJson.data && fleetDataJson.data.length > 0) {
-          const internalData = fleetDataJson.data as VehicleData[];
-          console.log(`Using internal fleet data: ${internalData.length} vehicles loaded from FleetData/fleetData.json`);
-          
-          // Verify the expected count
-          if (internalData.length !== 150) {
-            console.warn(`Expected 150 vehicles but found ${internalData.length}. This may indicate a data issue.`);
-          }
-          
-          setVehicles(internalData);
-          const stats = getFleetEVReadiness(internalData);
-          setFleetStats(stats);
-          
-          // Verify that we have 92% EV ready vehicles
-          const evReadyPercent = stats.evReadyPercentage;
-          if (evReadyPercent !== 92) {
-            console.warn(`Expected 92% EV-ready vehicles but found ${evReadyPercent}%. This may indicate a data issue.`);
-          }
-          
-          setError(null);
-          setUsingMockData(jsonUrl ? true : false); // Only mark as mock data if we tried to load from URL
-        } else {
-          throw new Error("Fleet data is not available");
+        } catch (err) {
+          console.error("Failed to load data from URL:", err);
+          setError("Failed to load fleet data. Please check the data source.");
+          setUsingMockData(true);
         }
       } catch (err) {
         console.error("Error loading fleet data:", err);

@@ -29,10 +29,16 @@ const VehicleCard = ({ vehicle, onClick }: VehicleCardProps) => {
       ? "text-viz-warning" 
       : "text-viz-critical";
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClick();
+  };
+
   return (
     <div 
       className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow cursor-pointer"
-      onClick={onClick}
+      onClick={handleClick}
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center space-x-2">
