@@ -27,6 +27,12 @@ export const useFleetData = (jsonUrl?: string) => {
           
           if (fetchedVehicles && fetchedVehicles.length > 0) {
             console.log(`Successfully loaded ${fetchedVehicles.length} vehicles from URL: ${dataUrl}`);
+            
+            // Log specific information to help debug the data issue
+            const evReady = fetchedVehicles.filter(v => v.max_95_perc <= 300);
+            const nonEvReady = fetchedVehicles.filter(v => v.max_95_perc > 300);
+            console.log(`Data breakdown: ${evReady.length} EV-ready and ${nonEvReady.length} non-EV-ready vehicles`);
+            
             setVehicles(fetchedVehicles);
             const stats = getFleetEVReadiness(fetchedVehicles);
             setFleetStats(stats);

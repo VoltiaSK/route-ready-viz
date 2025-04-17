@@ -1,3 +1,4 @@
+
 import { VehicleData } from "@/types/VehicleData";
 import VehicleCard from "./VehicleCard";
 import EmptyState from "./EmptyState";
@@ -43,9 +44,9 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
       ref={gridRef}
       className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4 min-h-[768px]"
     >
-      {vehicles.map((vehicle) => (
+      {vehicles.map((vehicle, index) => (
         <div 
-          key={`grid-${vehicle.lorry}`} // Use unique key with prefix to avoid duplicates
+          key={`grid-${vehicle.lorry}-${index}`} // Added index to ensure uniqueness
           className="transform transition-transform duration-150 hover:scale-105 relative z-10"
           onClick={() => {
             console.log("Vehicle card clicked:", vehicle.lorry);

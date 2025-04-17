@@ -18,6 +18,7 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
   const chartRef = useRef<HTMLDivElement>(null);
   const [isAnimated, setIsAnimated] = useState(false);
   
+  // Animate icons one by one
   useEffect(() => {
     if (chartRef.current && !isAnimated) {
       // Animate the split between EV-ready and non-EV-ready vehicles
@@ -41,8 +42,52 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
           ease: "power2.inOut" 
         }
       );
+      
+      // Animate vehicle icons one by one with slight delay
+      const evIcons = document.querySelectorAll('.ev-ready .vehicle-icon');
+      evIcons.forEach((icon, index) => {
+        gsap.fromTo(
+          icon,
+          { opacity: 0, scale: 0.5 },
+          { 
+            opacity: 0.85, 
+            scale: 1,
+            duration: 0.2, 
+            delay: 1.5 + (index * 0.01), // Small delay between each icon
+            ease: "back.out(1.7)" 
+          }
+        );
+      });
+      
+      const nonEvIcons = document.querySelectorAll('.non-ev-ready .vehicle-icon');
+      nonEvIcons.forEach((icon, index) => {
+        gsap.fromTo(
+          icon,
+          { opacity: 0, scale: 0.5 },
+          { 
+            opacity: 0.6, 
+            scale: 1,
+            duration: 0.2, 
+            delay: 1.5 + (index * 0.01), // Small delay between each icon
+            ease: "back.out(1.7)" 
+          }
+        );
+      });
     }
-  }, [chartRef, isAnimated, evReadyPercentage]);
+  }, [chartRef, isAnimated, evReadyPercentage, vehicles.length]);
+
+  // Create pulsating effect for the EV-ready section
+  useEffect(() => {
+    if (isAnimated) {
+      gsap.to(".ev-ready-gradient", {
+        opacity: 0.7,
+        duration: 1.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut"
+      });
+    }
+  }, [isAnimated]);
 
   return (
     <div className="my-6 bg-white rounded-lg p-4 shadow-sm">
@@ -59,23 +104,31 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
         ref={chartRef}
         className="rounded-lg overflow-hidden mb-3 flex h-24 bg-gray-100 border border-gray-200 relative"
       >
-        {/* EV Ready Section */}
+        {/* EV Ready Section with pulsating gradient */}
         <div
-          className="ev-ready-section bg-viz-ready h-full transition-all duration-500 ease-in-out"
+          className="ev-ready-section h-full transition-all duration-500 ease-in-out relative overflow-hidden"
           style={{ 
             width: isAnimated ? `${evReadyPercentage}%` : "0%",
             borderRadius: evReadyPercentage === 100 ? '8px' : '8px 0 0 8px',
-            overflow: evReadyPercentage === 100 ? 'hidden' : 'visible',
+            backgroundColor: "#F2FCE2", // Base color
           }}
         >
-          <div className="flex flex-wrap justify-center items-center h-full py-2 px-1 overflow-hidden">
-            {evReadyVehicles.map((vehicle) => (
+          {/* Pulsating gradient overlay */}
+          <div 
+            className="ev-ready-gradient absolute inset-0 z-10 opacity-0"
+            style={{ 
+              background: "linear-gradient(45deg, rgba(155,135,245,0.4) 0%, rgba(155,135,245,0) 70%)",
+            }}
+          />
+          
+          <div className="ev-ready flex flex-wrap justify-center items-center h-full py-2 px-1 overflow-hidden z-20 relative">
+            {evReadyVehicles.map((vehicle, index) => (
               <div 
-                key={`ev-${vehicle.lorry}`}
-                className="vehicle-icon ev-ready m-0.5 text-white opacity-70 hover:opacity-100 transition-opacity"
+                key={`ev-${vehicle.lorry}-${index}`}
+                className="vehicle-icon m-0.5 text-green-700 opacity-0"
                 title={`Vehicle ${vehicle.lorry}: ${vehicle.max_95_perc}km`}
               >
-                <CarFront size={12} strokeWidth={1.5} />
+                <CarFront size={10} strokeWidth={1.5} />
               </div>
             ))}
           </div>
@@ -83,20 +136,20 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
         
         {/* Non-EV Ready Section */}
         <div
-          className="non-ev-ready-section bg-viz-critical h-full transition-all duration-500 ease-in-out"
+          className="non-ev-ready-section bg-gray-300 h-full transition-all duration-500 ease-in-out"
           style={{ 
             width: isAnimated ? `${100 - evReadyPercentage}%` : "100%",
             borderRadius: evReadyPercentage === 0 ? '8px' : '0 8px 8px 0'
           }}
         >
-          <div className="flex flex-wrap justify-center items-center h-full py-2 px-1 overflow-hidden">
-            {nonEvReadyVehicles.map((vehicle) => (
+          <div className="non-ev-ready flex flex-wrap justify-center items-center h-full py-2 px-1 overflow-hidden">
+            {nonEvReadyVehicles.map((vehicle, index) => (
               <div 
-                key={`nonev-${vehicle.lorry}`}
-                className="vehicle-icon m-0.5 text-gray-600 opacity-50 hover:opacity-80 transition-opacity"
+                key={`nonev-${vehicle.lorry}-${index}`}
+                className="vehicle-icon m-0.5 text-gray-600 opacity-0"
                 title={`Vehicle ${vehicle.lorry}: ${vehicle.max_95_perc}km`}
               >
-                <CarFront size={12} strokeWidth={1.5} />
+                <CarFront size={10} strokeWidth={1.5} />
               </div>
             ))}
           </div>
@@ -105,11 +158,11 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
       
       <div className="flex justify-between text-sm">
         <div className="flex items-center">
-          <span className="inline-block w-3 h-3 bg-viz-ready rounded-full mr-2"></span>
+          <span className="inline-block w-3 h-3 bg-[#F2FCE2] rounded-full mr-2"></span>
           <span>EV Ready ({evReadyVehicles.length} vehicles)</span>
         </div>
         <div className="flex items-center">
-          <span className="inline-block w-3 h-3 bg-viz-critical rounded-full mr-2"></span>
+          <span className="inline-block w-3 h-3 bg-gray-300 rounded-full mr-2"></span>
           <span>Needs different solution ({nonEvReadyVehicles.length} vehicles)</span>
         </div>
       </div>
