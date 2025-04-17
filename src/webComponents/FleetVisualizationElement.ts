@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import FleetVisualization from '../components/FleetVisualization';
@@ -506,7 +505,7 @@ class FleetVisualizationElement extends HTMLElement {
     
     this.root.render(
       React.createElement(FleetVisualization, {
-        jsonUrl: this._jsonUrl || undefined,
+        dataSourceUrl: this._jsonUrl || undefined,
         className: "embedded-fleet-viz" // Add a class to help with specific embedded styling
       })
     );

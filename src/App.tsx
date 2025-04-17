@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,7 +15,7 @@ const EmbedVisualization = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const dataUrl = urlParams.get('dataUrl');
   
-  return <FleetVisualization jsonUrl={dataUrl || undefined} />;
+  return <FleetVisualization dataSourceUrl={dataUrl || undefined} />;
 };
 
 const App = () => {
