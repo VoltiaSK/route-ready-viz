@@ -33,13 +33,14 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
       );
       
       // Step 2: Animate the bar filling to show the proportions (after fade-in)
+      // Changed to use linear easing for continuous speed over 2 seconds
       masterTimeline.fromTo(
         ".ev-ready-section",
         { width: "0%" },
         { 
           width: `${evReadyPercentage}%`, 
           duration: 2, 
-          ease: "power2.inOut"
+          ease: "linear" // Changed from power2.inOut to linear for continuous speed
         }
       );
       
@@ -49,12 +50,12 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
         { 
           width: `${100 - evReadyPercentage}%`, 
           duration: 2, 
-          ease: "power2.inOut" 
+          ease: "linear" // Changed to linear as well for consistency
         },
         "<" // Start at the same time as the previous animation
       );
       
-      // Step 3: Animate each vehicle icon one by one with slight delay
+      // Step 3: Animate each vehicle icon one by one, but AFTER the bar animation completes
       masterTimeline.add(() => {
         // Animate EV-ready vehicle icons (left-aligned)
         const evIcons = document.querySelectorAll('.ev-ready .vehicle-icon');
@@ -134,11 +135,11 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
             backgroundColor: "#F2FCE2", // Base color
           }}
         >
-          {/* Pulsating gradient overlay */}
+          {/* Pulsating gradient overlay - Updated with specified colors */}
           <div 
             className="ev-ready-gradient absolute inset-0 z-10 opacity-0"
             style={{ 
-              background: "linear-gradient(45deg, rgba(155,245,155,0.4) 0%, rgba(155,245,155,0) 70%)",
+              background: "linear-gradient(45deg, #17B26A 0%, #1BD081 70%)",
             }}
           />
           
