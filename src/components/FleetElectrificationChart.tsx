@@ -32,7 +32,7 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
         { opacity: 1, duration: 0.8, ease: "power2.inOut" }
       );
       
-      // Step 2: Animate the bar filling to show the proportions (after fade-in)
+      // Step 2: Animate the bar filling to show the proportions with constant speed
       masterTimeline.fromTo(
         ".ev-ready-section",
         { width: "0%" },
@@ -96,21 +96,25 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
     }
   }, [evReadyPercentage, evReadyVehicles.length, nonEvReadyVehicles.length]);
 
-  // Moving gradient effect instead of pulsating
+  // Moving gradient effect with seamless animation
   useEffect(() => {
     if (isAnimated) {
+      // Create a seamless animation by using a larger gradient and animating 
+      // the background position from left to right continuously
       gsap.fromTo(
         ".ev-ready-gradient",
         { 
-          backgroundPosition: "0% 50%",
+          backgroundPosition: "0% 0%",
           opacity: 0.7
         },
         { 
-          backgroundPosition: "100% 50%",
+          backgroundPosition: "100% 0%", 
           opacity: 0.7,
           duration: 3,
           repeat: -1,
-          ease: "linear"
+          ease: "none", // Use "none" instead of "linear" for perfectly smooth motion
+          repeatRefresh: false, // Don't refresh values between repeats
+          immediateRender: true // Render immediately to avoid initial flash
         }
       );
     }
@@ -141,12 +145,12 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
             backgroundColor: "#F2FCE2", // Base color
           }}
         >
-          {/* Moving gradient overlay with specific colors */}
+          {/* Smooth flowing gradient overlay with specific colors */}
           <div 
             className="ev-ready-gradient absolute inset-0 z-10 opacity-0"
             style={{ 
-              background: "linear-gradient(90deg, #17B26A 0%, #1BD081 100%)",
-              backgroundSize: "200% 100%"
+              background: "linear-gradient(90deg, #17B26A 0%, #1BD081 50%, #17B26A 100%)", // Repeating gradient for seamless loop
+              backgroundSize: "200% 100%" // Double width for smooth looping
             }}
           />
           
@@ -173,6 +177,7 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
           }}
         >
           <div className="non-ev-ready flex flex-wrap justify-start content-start items-start h-full py-2 px-1 overflow-hidden">
+            {/* Make sure we display ALL non-EV ready vehicles */}
             {nonEvReadyVehicles.map((vehicle, index) => (
               <div 
                 key={`nonev-${vehicle.lorry}-${index}`}
