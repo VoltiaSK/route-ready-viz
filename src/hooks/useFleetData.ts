@@ -61,13 +61,9 @@ export const useFleetData = (jsonUrl?: string) => {
         setVehicles(vehiclesToSet);
         setFleetStats(stats);
         
-        // Verify after state update
-        setTimeout(() => {
-          console.log(`🔍 [State Verify] Vehicles array in state has ${vehicles.length} vehicles`);
-          if (vehicles.length !== vehiclesCountRef.current) {
-            console.log(`⚠️ State update discrepancy: Expected ${vehiclesCountRef.current} vehicles but have ${vehicles.length}`);
-          }
-        }, 100);
+        // FIXED: The state verification was using stale closure values
+        // React state updates are asynchronous, so checking 'vehicles' immediately won't show the new values
+        // Remove the verification code that causes confusion in logs
         
         setLoading(false);
         toast({
@@ -101,6 +97,7 @@ export const useFleetData = (jsonUrl?: string) => {
   }, []);  // Remove jsonUrl from dependencies to prevent reloading
 
   useEffect(() => {
+    // This will run after each state update with the latest values
     console.log(`📊 [State Update] Vehicles state changed: ${vehicles.length} vehicles`);
     console.log(`📊 [State Update] Fleet stats: ${fleetStats.evReadyCount}/${fleetStats.totalVehicles} vehicles are EV-ready`);
   }, [vehicles, fleetStats]);

@@ -37,13 +37,14 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
     console.log(`🔄 [FleetVisualization] Vehicles count changed: ${vehicles.length}`);
     console.log(`📊 [FleetVisualization] Stats: ${fleetStats.evReadyCount}/${fleetStats.totalVehicles} vehicles are EV-ready`);
     
-    setDebugInfo({
-      vehicleCount: vehicles.length,
-      lastLogged: new Date(),
-      dataSourceUrl: "https://route-ready-viz.vercel.app/fleetData.json"
-    });
-    
+    // Make sure we have the right data before updating debug info
     if (vehicles.length > 0) {
+      setDebugInfo({
+        vehicleCount: vehicles.length,
+        lastLogged: new Date(),
+        dataSourceUrl: "https://route-ready-viz.vercel.app/fleetData.json"
+      });
+      
       toast({
         title: `${vehicles.length} vehicles loaded`,
         description: `Fleet breakdown: ${fleetStats.evReadyCount} EV-ready (${Math.round((fleetStats.evReadyCount/vehicles.length)*100)}%)`,
