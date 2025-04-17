@@ -41,6 +41,9 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
       throw new Error("No vehicle data found in the response");
     }
     
+    // Make sure we're getting ALL vehicles from the JSON
+    console.log(`Total number of vehicles in JSON: ${vehicleData.length}`);
+    
     // Count vehicle types for debugging
     const evReady = vehicleData.filter(v => v.max_95_perc <= 300);
     const nonEvReady = vehicleData.filter(v => v.max_95_perc > 300);

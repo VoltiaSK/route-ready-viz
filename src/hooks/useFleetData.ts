@@ -31,6 +31,7 @@ export const useFleetData = (jsonUrl?: string) => {
           throw new Error("No vehicle data was returned");
         }
         
+        // Log the actual number of vehicles to verify
         console.log(`Successfully loaded ${vehicleData.length} vehicles from ${dataUrl}`);
         
         // Calculate fleet statistics
