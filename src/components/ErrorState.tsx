@@ -13,6 +13,7 @@ const ErrorState = ({ error, showingMockData = false }: ErrorStateProps) => {
       <div className="fleet-viz-error-help text-sm text-gray-600">
         <p>Please check that the data source is accessible and contains valid vehicle data.</p>
         <p className="mt-2 text-xs">Expected file: <code>public/fleetData.json</code></p>
+        <p className="mt-1 text-xs">The file should contain a JSON object with a 'data' property that is an array of vehicle objects.</p>
       </div>
     </div>
   );

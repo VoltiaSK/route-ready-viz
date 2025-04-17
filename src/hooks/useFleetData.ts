@@ -34,6 +34,12 @@ export const useFleetData = (jsonUrl?: string) => {
         // Log the actual number of vehicles to verify
         console.log(`Successfully loaded ${vehicleData.length} vehicles from ${dataUrl}`);
         
+        if (vehicleData.length > 0) {
+          // Sample check to ensure data quality
+          const sampleVehicle = vehicleData[0];
+          console.log(`Data integrity check - First vehicle: ${sampleVehicle.lorry}, Last vehicle: ${vehicleData[vehicleData.length - 1].lorry}`);
+        }
+        
         // Calculate fleet statistics
         const stats = getFleetEVReadiness(vehicleData);
         

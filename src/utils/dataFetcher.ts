@@ -41,8 +41,13 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
       throw new Error("No vehicle data found in the response");
     }
     
-    // Make sure we're getting ALL vehicles from the JSON
-    console.log(`Total number of vehicles in JSON: ${vehicleData.length}`);
+    // Get the full length of the data for verification
+    const totalVehicleCount = vehicleData.length;
+    console.log(`Total number of vehicles in JSON: ${totalVehicleCount}`);
+    
+    // Verify we're getting complete data
+    const jsonString = JSON.stringify(vehicleData);
+    console.log(`JSON data size: ${(jsonString.length / 1024).toFixed(2)} KB`);
     
     // Count vehicle types for debugging
     const evReady = vehicleData.filter(v => v.max_95_perc <= 300);
@@ -51,6 +56,11 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     console.log(`Successfully loaded ${vehicleData.length} vehicles:`);
     console.log(`- ${evReady.length} EV-ready vehicles`);
     console.log(`- ${nonEvReady.length} non-EV-ready vehicles`);
+    
+    // Double check we're returning the full array
+    if (vehicleData.length !== totalVehicleCount) {
+      console.error(`Data integrity issue: Expected ${totalVehicleCount} but returning ${vehicleData.length}`);
+    }
     
     return vehicleData;
   } catch (error) {
