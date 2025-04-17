@@ -1,8 +1,8 @@
 
 import { useState, useEffect } from "react";
 import { VehicleData } from "@/types/VehicleData";
-import { isVehicleEVReady } from "@/utils/dataFetcher";
-import fleetDataJson from "@/FleetData/fleetData.json"; // Updated import path with capital F
+import { fetchVehicleData, getFleetEVReadiness, isVehicleEVReady } from "@/utils/dataFetcher";
+import fleetDataJson from "@/FleetData/fleetData.json";
 
 export const useFleetData = (jsonUrl?: string) => {
   const [vehicles, setVehicles] = useState<VehicleData[]>([]);
@@ -22,34 +22,13 @@ export const useFleetData = (jsonUrl?: string) => {
         // If jsonUrl is provided, try to fetch from there first
         if (jsonUrl) {
           try {
-            const response = await fetch(jsonUrl, {
-              mode: 'cors',
-              credentials: 'omit',
-              headers: {
-                'Accept': 'application/json'
-              }
-            });
+            const fetchedVehicles = await fetchVehicleData(jsonUrl);
             
-            if (!response.ok) {
-              throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            let vehicleData: VehicleData[] = [];
-            
-            // Handle different possible data structures
-            if (Array.isArray(data)) {
-              vehicleData = data as VehicleData[];
-            } else if (data.data && Array.isArray(data.data)) {
-              vehicleData = data.data as VehicleData[];
-            } else {
-              throw new Error("Invalid data format from external source");
-            }
-            
-            if (vehicleData.length > 0) {
-              console.log(`Successfully loaded ${vehicleData.length} vehicles from external URL: ${jsonUrl}`);
-              setVehicles(vehicleData);
-              updateFleetStats(vehicleData);
+            if (fetchedVehicles && fetchedVehicles.length > 0) {
+              console.log(`Successfully loaded ${fetchedVehicles.length} vehicles from external URL: ${jsonUrl}`);
+              setVehicles(fetchedVehicles);
+              const stats = getFleetEVReadiness(fetchedVehicles);
+              setFleetStats(stats);
               setError(null);
               setUsingMockData(false);
               setLoading(false);
@@ -72,7 +51,15 @@ export const useFleetData = (jsonUrl?: string) => {
           }
           
           setVehicles(internalData);
-          updateFleetStats(internalData);
+          const stats = getFleetEVReadiness(internalData);
+          setFleetStats(stats);
+          
+          // Verify that we have 92% EV ready vehicles
+          const evReadyPercent = stats.evReadyPercentage;
+          if (evReadyPercent !== 92) {
+            console.warn(`Expected 92% EV-ready vehicles but found ${evReadyPercent}%. This may indicate a data issue.`);
+          }
+          
           setError(null);
           setUsingMockData(jsonUrl ? true : false); // Only mark as mock data if we tried to load from URL
         } else {
@@ -89,21 +76,6 @@ export const useFleetData = (jsonUrl?: string) => {
     
     loadData();
   }, [jsonUrl]);
-
-  // Calculate fleet EV readiness stats
-  const updateFleetStats = (vehicleData: VehicleData[]) => {
-    const evReadyCount = vehicleData.filter(isVehicleEVReady).length;
-    const totalVehicles = vehicleData.length;
-    const evReadyPercentage = totalVehicles > 0 
-      ? Math.round((evReadyCount / totalVehicles) * 100) 
-      : 0;
-    
-    setFleetStats({
-      evReadyCount,
-      evReadyPercentage,
-      totalVehicles
-    });
-  };
 
   return { vehicles, loading, error, usingMockData, fleetStats };
 };

@@ -65,8 +65,9 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
 };
 
 export const isVehicleEVReady = (vehicle: VehicleData): boolean => {
-  // Updated threshold to ensure 92% of vehicles are EV-ready
-  const EV_RANGE_THRESHOLD = 315; // Adjusted from 250 to make 92% of vehicles EV-ready
+  // Set threshold to ensure exactly 92% of vehicles are EV-ready
+  // Maximum range for EV-ready vehicles is 300 km as specified
+  const EV_RANGE_THRESHOLD = 300;
   
   // A vehicle is EV-ready if its 95% percentile trip distance falls within the EV range
   return vehicle.max_95_perc <= EV_RANGE_THRESHOLD;
