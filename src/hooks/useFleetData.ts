@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { VehicleData } from "@/types/VehicleData";
 import { fetchVehicleData, getFleetEVReadiness } from "@/utils/dataFetcher";
 
@@ -13,6 +12,8 @@ export const useFleetData = (jsonUrl?: string) => {
     evReadyPercentage: 0,
     totalVehicles: 0
   });
+  
+  const loadAttempts = useRef(0);
 
   useEffect(() => {
     const loadData = async () => {
@@ -21,9 +22,9 @@ export const useFleetData = (jsonUrl?: string) => {
       setUsingMockData(false);
       
       try {
-        // Use the provided JSON file URL or default to public/fleetData.json
         const dataUrl = jsonUrl || '/fleetData.json';
-        console.log(`Attempting to load fleet data from: ${dataUrl}`);
+        const currentAttempt = ++loadAttempts.current;
+        console.log(`[Attempt ${currentAttempt}] Attempting to load fleet data from: ${dataUrl}`);
         
         const vehicleData = await fetchVehicleData(dataUrl);
         
@@ -31,21 +32,24 @@ export const useFleetData = (jsonUrl?: string) => {
           throw new Error("No vehicle data was returned");
         }
         
-        // Log the FULL data set information
-        console.log(`Successfully loaded ALL ${vehicleData.length} vehicles from ${dataUrl}`);
+        console.log(`[Attempt ${currentAttempt}] Successfully loaded ALL ${vehicleData.length} vehicles from ${dataUrl}`);
         
-        // Calculate fleet statistics with the FULL dataset
         const stats = getFleetEVReadiness(vehicleData);
         
-        // Update state with the FULL loaded data - no slicing or filtering
+        console.log(`[CRITICAL] Setting state with ${vehicleData.length} vehicles`);
+        
         setVehicles(vehicleData);
         setFleetStats(stats);
+        
+        setTimeout(() => {
+          console.log(`[State Check] Vehicles array in state now has ${vehicleData.length} vehicles`);
+        }, 0);
+        
         setLoading(false);
       } catch (err: any) {
         console.error("Failed to load fleet data:", err);
         setError(err.message || "Failed to load fleet data. Please check the data source.");
         
-        // Reset to empty state on error
         setVehicles([]);
         setFleetStats({
           evReadyCount: 0,
@@ -59,6 +63,11 @@ export const useFleetData = (jsonUrl?: string) => {
     
     loadData();
   }, [jsonUrl]);
+
+  useEffect(() => {
+    console.log(`[State Update] Vehicles state changed: ${vehicles.length} vehicles`);
+    console.log(`[State Update] Fleet stats: ${fleetStats.evReadyCount}/${fleetStats.totalVehicles} vehicles are EV-ready`);
+  }, [vehicles, fleetStats]);
 
   return { vehicles, loading, error, usingMockData, fleetStats };
 };

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFleetData } from "@/hooks/useFleetData";
 import LoadingState from "@/components/LoadingState";
@@ -23,6 +23,13 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
   
   // Use either dataSourceUrl or jsonUrl (for backward compatibility)
   const { vehicles, loading, error, usingMockData, fleetStats } = useFleetData(jsonUrl || dataSourceUrl);
+
+  // Additional logging for data visibility
+  useEffect(() => {
+    console.log(`[FleetVisualization] Received ${vehicles.length} vehicles from useFleetData`);
+    console.log(`[FleetVisualization] Loading: ${loading}, Error: ${error ? 'Yes' : 'No'}`);
+    console.log(`[FleetVisualization] Stats: ${fleetStats.evReadyCount}/${fleetStats.totalVehicles} vehicles are EV-ready`);
+  }, [vehicles, loading, error, fleetStats]);
 
   const handleSelectVehicle = (vehicle: VehicleData) => {
     console.log("Vehicle selected:", vehicle.lorry);

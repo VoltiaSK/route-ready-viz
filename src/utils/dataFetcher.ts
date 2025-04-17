@@ -7,6 +7,7 @@ import { VehicleData } from "@/types/VehicleData";
 export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
   try {
     console.log(`Fetching vehicle data from: ${url}`);
+    const startTime = performance.now();
     
     const response = await fetch(url, {
       cache: 'no-store', // Prevent caching issues
@@ -27,7 +28,7 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     let jsonData;
     try {
       jsonData = JSON.parse(responseText);
-    } catch (parseError) {
+    } catch (parseError: any) {
       console.error("JSON parsing error:", parseError);
       throw new Error(`Invalid JSON format: ${parseError.message}`);
     }
@@ -42,7 +43,7 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
       vehicleData = jsonData;
       console.log(`Found ${vehicleData.length} vehicles in direct array format`);
     } else {
-      console.error("Unexpected data format:", jsonData);
+      console.error("Unexpected data format:", JSON.stringify(jsonData).substring(0, 200) + "...");
       throw new Error("Invalid data format: Could not find vehicle data array");
     }
     
@@ -52,7 +53,7 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     }
     
     // Log the complete data for verification
-    console.log(`Successfully parsed ${vehicleData.length} vehicles from JSON`);
+    console.log(`CRITICAL CHECK: Successfully parsed ${vehicleData.length} vehicles from JSON`);
     
     // Verify we're getting complete data
     const jsonString = JSON.stringify(vehicleData);
@@ -69,11 +70,21 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     
     if (vehicleData.length > 0) {
       console.log(`First vehicle: ${vehicleData[0].lorry}, Last vehicle: ${vehicleData[vehicleData.length - 1].lorry}`);
+      // Log a few more vehicles to ensure we're getting the full dataset
+      if (vehicleData.length > 10) {
+        console.log(`5th vehicle: ${vehicleData[4].lorry}, 10th vehicle: ${vehicleData[9].lorry}`);
+      }
+      if (vehicleData.length > 100) {
+        console.log(`50th vehicle: ${vehicleData[49].lorry}, 100th vehicle: ${vehicleData[99].lorry}`);
+      }
     }
     
-    // IMPORTANT: Make sure we return the FULL array without any slicing or truncation
+    const endTime = performance.now();
+    console.log(`Data fetching completed in ${(endTime - startTime).toFixed(2)}ms. Returning ${vehicleData.length} vehicles.`);
+    
+    // IMPORTANT: Return the FULL array without any slicing or truncation
     return vehicleData;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching vehicle data:", error);
     throw error;
   }
@@ -91,6 +102,8 @@ export const getFleetEVReadiness = (vehicles: VehicleData[]): {
   evReadyPercentage: number;
   totalVehicles: number;
 } => {
+  console.log(`Calculating EV readiness for ${vehicles.length} vehicles`);
+  
   const evReadyVehicles = vehicles.filter(isVehicleEVReady);
   const evReadyCount = evReadyVehicles.length;
   const totalVehicles = vehicles.length;

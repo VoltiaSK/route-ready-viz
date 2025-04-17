@@ -10,6 +10,14 @@ interface VehicleGridProps {
 }
 
 const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
+  // Log vehicle data for debugging
+  useEffect(() => {
+    console.log(`[VehicleGrid] Rendering with ${vehicles.length} vehicles`);
+    if (vehicles.length > 0) {
+      console.log(`[VehicleGrid] First vehicle: ${vehicles[0].lorry}, Last vehicle: ${vehicles[vehicles.length-1].lorry}`);
+    }
+  }, [vehicles]);
+  
   // Create placeholder array for empty spaces when fewer than 12 vehicles
   const placeholders = vehicles.length > 0 && vehicles.length < 12 
     ? Array(12 - vehicles.length).fill(null) 
@@ -34,6 +42,7 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
   }, []);
 
   if (!vehicles || vehicles.length === 0) {
+    console.log("[VehicleGrid] No vehicles to display, showing EmptyState");
     return <EmptyState />;
   }
 
