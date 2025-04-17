@@ -1,12 +1,15 @@
 
-import { VehicleData, VehicleDataResponse } from "@/types/VehicleData";
+import { VehicleData } from "@/types/VehicleData";
 
+/**
+ * Fetches vehicle data from the specified URL
+ */
 export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
   try {
     console.log(`Fetching vehicle data from: ${url}`);
+    
     const response = await fetch(url, {
-      mode: 'cors',
-      credentials: 'omit',
+      cache: 'no-store', // Prevent caching issues
       headers: {
         'Accept': 'application/json'
       }
@@ -16,52 +19,38 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
       throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
     }
     
-    const data = await response.json();
+    // Parse the JSON response
+    const jsonData = await response.json();
     
-    // Handle different possible data structures
+    // Check if the response has a 'data' property containing the vehicles array
     let vehicleData: VehicleData[] = [];
     
-    if (Array.isArray(data)) {
-      // Direct array of vehicle data
-      console.log(`Successfully fetched ${data.length} vehicles (direct array format)`);
-      vehicleData = data as VehicleData[];
-    } else if (data.data && Array.isArray(data.data)) {
-      // Object with a 'data' property containing the array
-      console.log(`Successfully fetched ${data.data.length} vehicles (data.data format)`);
-      vehicleData = data.data as VehicleData[];
+    if (jsonData && jsonData.data && Array.isArray(jsonData.data)) {
+      vehicleData = jsonData.data;
+      console.log(`Found ${vehicleData.length} vehicles in the data.data property`);
+    } else if (Array.isArray(jsonData)) {
+      vehicleData = jsonData;
+      console.log(`Found ${vehicleData.length} vehicles in direct array format`);
     } else {
-      // Try to find any array in the response that looks like vehicle data
-      const possibleArrays = Object.values(data).filter(
-        (val): val is any[] => Array.isArray(val) && val.length > 0
-      );
-      
-      if (possibleArrays.length > 0) {
-        // Use the largest array as it's likely the vehicle data
-        const largestArray = possibleArrays.reduce((a: any[], b: any[]) => 
-          a.length > b.length ? a : b, [] as any[]
-        );
-        console.log(`Successfully fetched ${largestArray.length} vehicles (detected array format)`);
-        vehicleData = largestArray as VehicleData[];
-      } else {
-        throw new Error("Could not find vehicle data in the response");
-      }
+      console.error("Unexpected data format:", jsonData);
+      throw new Error("Invalid data format: Could not find vehicle data array");
     }
     
-    // Verify we have vehicles
-    console.log(`Successfully loaded ${vehicleData.length} vehicles`);
+    // Validate the data
+    if (!vehicleData || vehicleData.length === 0) {
+      throw new Error("No vehicle data found in the response");
+    }
     
-    // Count EV ready vs non-EV ready
+    // Count vehicle types for debugging
     const evReady = vehicleData.filter(v => v.max_95_perc <= 300);
     const nonEvReady = vehicleData.filter(v => v.max_95_perc > 300);
-    console.log(`Data breakdown in fetcher: ${evReady.length} EV-ready and ${nonEvReady.length} non-EV-ready vehicles`);
     
-    // Double check the total matches
-    if (evReady.length + nonEvReady.length !== vehicleData.length) {
-      console.error("CRITICAL ERROR: Vehicle counts don't add up correctly!");
-    }
+    console.log(`Successfully loaded ${vehicleData.length} vehicles:`);
+    console.log(`- ${evReady.length} EV-ready vehicles`);
+    console.log(`- ${nonEvReady.length} non-EV-ready vehicles`);
     
     return vehicleData;
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error fetching vehicle data:", error);
     throw error;
   }
@@ -87,11 +76,15 @@ export const getFleetEVReadiness = (vehicles: VehicleData[]): {
   const evReadyFleetPercentage = Math.round((evReadyCount/totalVehicles)*100);
   
   console.log(`Fleet composition: ${evReadyCount}/${totalVehicles} vehicles are EV-ready (${evReadyFleetPercentage}% of fleet)`);
-  console.log(`These ${evReadyCount} EV-ready vehicles handle 92% of all routes`);
+  
+  // Calculate percentage of routes that can be served by EVs
+  // Currently hardcoded to 92% as per original implementation
+  const routePercentage = 92;
+  console.log(`These ${evReadyCount} EV-ready vehicles handle ${routePercentage}% of all routes`);
   
   return {
     evReadyCount,
-    evReadyPercentage: 92, // This is the percentage of routes that can be served by EVs
+    evReadyPercentage: routePercentage,
     totalVehicles
   };
 };

@@ -1,6 +1,5 @@
 
-import React, { useEffect, useState, useRef } from "react";
-import { gsap } from "gsap";
+import React from "react";
 import { VehicleData } from "@/types/VehicleData";
 import { isVehicleEVReady } from "@/utils/dataFetcher";
 import { CarFront } from "lucide-react";
@@ -15,89 +14,8 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
   const nonEvReadyVehicles = vehicles.filter(vehicle => !isVehicleEVReady(vehicle));
   const evReadyFleetPercentage = Math.round((evReadyVehicles.length / vehicles.length) * 100);
   
-  const chartRef = useRef<HTMLDivElement>(null);
-  const [isAnimated, setIsAnimated] = useState(false);
-  
   console.log(`Chart rendering with ${evReadyVehicles.length} EV-ready and ${nonEvReadyVehicles.length} non-EV-ready vehicles`);
   
-  // Main animation sequence
-  useEffect(() => {
-    if (chartRef.current) {
-      // No load animation - just fade in the entire chart
-      const masterTimeline = gsap.timeline();
-      
-      masterTimeline.fromTo(
-        chartRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.8, ease: "power2.inOut" }
-      );
-      
-      // Animate each vehicle icon one by one
-      masterTimeline.add(() => {
-        // Animate EV-ready vehicle icons (top section)
-        const evIcons = document.querySelectorAll('.ev-ready .vehicle-icon');
-        evIcons.forEach((icon, index) => {
-          gsap.fromTo(
-            icon,
-            { opacity: 0, scale: 0 },
-            { 
-              opacity: 0.85, 
-              scale: 1,
-              duration: 0.15, 
-              delay: index * 0.01, // Small sequential delay between each icon
-              ease: "back.out(1.7)" 
-            }
-          );
-        });
-        
-        // Animate non-EV-ready vehicle icons (bottom section)
-        const nonEvIcons = document.querySelectorAll('.non-ev-ready .vehicle-icon');
-        nonEvIcons.forEach((icon, index) => {
-          gsap.fromTo(
-            icon,
-            { opacity: 0, scale: 0 },
-            { 
-              opacity: 0.6, 
-              scale: 1,
-              duration: 0.15, 
-              delay: index * 0.01, // Small sequential delay between each icon
-              ease: "back.out(1.7)" 
-            }
-          );
-        });
-      });
-      
-      // Start the moving gradient effect after all animations complete
-      masterTimeline.add(() => {
-        setIsAnimated(true);
-      });
-    }
-  }, [evReadyVehicles.length, nonEvReadyVehicles.length]);
-
-  // Moving gradient effect with seamless animation
-  useEffect(() => {
-    if (isAnimated) {
-      // Create a seamless animation by using a larger gradient and animating 
-      // the background position from left to right continuously
-      gsap.fromTo(
-        ".ev-ready-gradient",
-        { 
-          backgroundPosition: "0% 0%",
-          opacity: 0.7
-        },
-        { 
-          backgroundPosition: "100% 0%", 
-          opacity: 0.7,
-          duration: 3,
-          repeat: -1,
-          ease: "none", // Use "none" instead of "linear" for perfectly smooth motion
-          repeatRefresh: false, // Don't refresh values between repeats
-          immediateRender: true // Render immediately to avoid initial flash
-        }
-      );
-    }
-  }, [isAnimated]);
-
   return (
     <div className="my-6 bg-white rounded-lg p-4 shadow-sm">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
@@ -109,31 +27,14 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
         </div>
       </div>
       
-      <div
-        ref={chartRef}
-        className="rounded-lg overflow-hidden mb-3 flex flex-col h-48 bg-gray-100 border border-gray-200 relative"
-      >
-        {/* EV Ready Section (Top) with moving gradient */}
-        <div
-          className="ev-ready-section h-1/2 w-full transition-all duration-500 ease-in-out relative overflow-hidden"
-          style={{ 
-            backgroundColor: "#F2FCE2", // Base color
-          }}
-        >
-          {/* Smooth flowing gradient overlay with specific colors */}
-          <div 
-            className="ev-ready-gradient absolute inset-0 z-10 opacity-0"
-            style={{ 
-              background: "linear-gradient(90deg, #17B26A 0%, #1BD081 50%, #17B26A 100%)", // Repeating gradient for seamless loop
-              backgroundSize: "200% 100%" // Double width for smooth looping
-            }}
-          />
-          
-          <div className="ev-ready flex flex-wrap content-start justify-start items-start h-full py-2 px-1 overflow-hidden z-20 relative">
+      <div className="rounded-lg overflow-hidden mb-3 flex flex-col h-48 bg-gray-100 border border-gray-200">
+        {/* EV Ready Section (Top) */}
+        <div className="ev-ready-section h-1/2 w-full bg-[#F2FCE2]">
+          <div className="ev-ready flex flex-wrap content-start justify-start items-start h-full py-2 px-1 overflow-hidden">
             {evReadyVehicles.map((vehicle, index) => (
               <div 
                 key={`ev-${vehicle.lorry}-${index}`}
-                className="vehicle-icon m-px text-green-700 opacity-0"
+                className="vehicle-icon m-px text-green-700"
                 title={`Vehicle ${vehicle.lorry}: ${vehicle.max_95_perc}km`}
               >
                 <CarFront size={8} strokeWidth={1.5} />
@@ -143,14 +44,12 @@ const FleetElectrificationChart = ({ vehicles, evReadyPercentage }: FleetElectri
         </div>
         
         {/* Non-EV Ready Section (Bottom) */}
-        <div
-          className="non-ev-ready-section bg-gray-300 h-1/2 w-full transition-all duration-500 ease-in-out"
-        >
+        <div className="non-ev-ready-section bg-gray-300 h-1/2 w-full">
           <div className="non-ev-ready flex flex-wrap justify-start content-start items-start h-full py-2 px-1 overflow-hidden">
             {nonEvReadyVehicles.map((vehicle, index) => (
               <div 
                 key={`nonev-${vehicle.lorry}-${index}`}
-                className="vehicle-icon m-px text-gray-600 opacity-0"
+                className="vehicle-icon m-px text-gray-600"
                 title={`Vehicle ${vehicle.lorry}: ${vehicle.max_95_perc}km`}
               >
                 <CarFront size={8} strokeWidth={1.5} />

@@ -17,45 +17,41 @@ export const useFleetData = (jsonUrl?: string) => {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
+      setError(null);
+      setUsingMockData(false);
+      
       try {
-        // Use the public JSON file URL if not provided
+        // Use the provided JSON file URL or default to public/fleetData.json
         const dataUrl = jsonUrl || '/fleetData.json';
-        console.log("Attempting to load data from:", dataUrl);
+        console.log(`Attempting to load fleet data from: ${dataUrl}`);
         
-        try {
-          const fetchedVehicles = await fetchVehicleData(dataUrl);
-          
-          if (fetchedVehicles && fetchedVehicles.length > 0) {
-            console.log(`Successfully loaded ${fetchedVehicles.length} vehicles from URL: ${dataUrl}`);
-            
-            // Log the data structure to identify any issues
-            console.debug("Data structure:", JSON.stringify(fetchedVehicles.slice(0, 2)));
-            
-            // Log specific information to help debug the data issue
-            const evReady = fetchedVehicles.filter(v => v.max_95_perc <= 300);
-            const nonEvReady = fetchedVehicles.filter(v => v.max_95_perc > 300);
-            console.log(`Data breakdown: ${evReady.length} EV-ready and ${nonEvReady.length} non-EV-ready vehicles`);
-            
-            setVehicles(fetchedVehicles);
-            const stats = getFleetEVReadiness(fetchedVehicles);
-            setFleetStats(stats);
-            setError(null);
-            setUsingMockData(false);
-            setLoading(false);
-            return;
-          } else {
-            throw new Error("Fetched vehicle data is empty");
-          }
-        } catch (err) {
-          console.error("Failed to load data from URL:", err);
-          setError("Failed to load fleet data. Please check the data source.");
-          setUsingMockData(true);
+        const vehicleData = await fetchVehicleData(dataUrl);
+        
+        if (!vehicleData || vehicleData.length === 0) {
+          throw new Error("No vehicle data was returned");
         }
-      } catch (err) {
-        console.error("Error loading fleet data:", err);
-        setError("Failed to load fleet data.");
-        setUsingMockData(true);
-      } finally {
+        
+        console.log(`Successfully loaded ${vehicleData.length} vehicles from ${dataUrl}`);
+        
+        // Calculate fleet statistics
+        const stats = getFleetEVReadiness(vehicleData);
+        
+        // Update state with the loaded data
+        setVehicles(vehicleData);
+        setFleetStats(stats);
+        setLoading(false);
+      } catch (err: any) {
+        console.error("Failed to load fleet data:", err);
+        setError(err.message || "Failed to load fleet data. Please check the data source.");
+        
+        // Reset to empty state on error
+        setVehicles([]);
+        setFleetStats({
+          evReadyCount: 0,
+          evReadyPercentage: 0,
+          totalVehicles: 0
+        });
+        setUsingMockData(false);
         setLoading(false);
       }
     };
