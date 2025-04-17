@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { VehicleData } from "@/types/VehicleData";
 import { fetchVehicleData, getFleetEVReadiness } from "@/utils/dataFetcher";
@@ -14,6 +15,7 @@ export const useFleetData = (jsonUrl?: string) => {
   });
   
   const loadAttempts = useRef(0);
+  const externalDataUrl = "https://route-ready-viz.vercel.app/fleetData.json";
 
   useEffect(() => {
     const loadData = async () => {
@@ -22,7 +24,8 @@ export const useFleetData = (jsonUrl?: string) => {
       setUsingMockData(false);
       
       try {
-        const dataUrl = jsonUrl || '/fleetData.json';
+        // Use the external data URL first, then fall back to jsonUrl parameter, then local file
+        const dataUrl = externalDataUrl || jsonUrl || '/fleetData.json';
         const currentAttempt = ++loadAttempts.current;
         console.log(`[Attempt ${currentAttempt}] Attempting to load fleet data from: ${dataUrl}`);
         
@@ -37,6 +40,7 @@ export const useFleetData = (jsonUrl?: string) => {
         const stats = getFleetEVReadiness(vehicleData);
         
         console.log(`[CRITICAL] Setting state with ${vehicleData.length} vehicles`);
+        console.log(`[Data Source] Using data from: ${dataUrl}`);
         
         setVehicles(vehicleData);
         setFleetStats(stats);

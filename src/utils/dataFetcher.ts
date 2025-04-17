@@ -13,7 +13,8 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
       cache: 'no-store', // Prevent caching issues
       headers: {
         'Accept': 'application/json'
-      }
+      },
+      mode: 'cors' // Enable CORS for external URLs
     });
     
     if (!response.ok) {
@@ -68,14 +69,28 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     console.log(`- EV-ready vehicles: ${evReady.length}`);
     console.log(`- Non-EV-ready vehicles: ${nonEvReady.length}`);
     
+    // Log some vehicle samples to verify full dataset
     if (vehicleData.length > 0) {
       console.log(`First vehicle: ${vehicleData[0].lorry}, Last vehicle: ${vehicleData[vehicleData.length - 1].lorry}`);
-      // Log a few more vehicles to ensure we're getting the full dataset
+      
       if (vehicleData.length > 10) {
         console.log(`5th vehicle: ${vehicleData[4].lorry}, 10th vehicle: ${vehicleData[9].lorry}`);
       }
+      
       if (vehicleData.length > 100) {
         console.log(`50th vehicle: ${vehicleData[49].lorry}, 100th vehicle: ${vehicleData[99].lorry}`);
+      }
+      
+      if (vehicleData.length > 140) {
+        console.log(`140th vehicle: ${vehicleData[139].lorry}`);
+      }
+      
+      if (vehicleData.length > 145) {
+        console.log(`145th vehicle: ${vehicleData[144].lorry}`);
+      }
+      
+      if (vehicleData.length > 149) {
+        console.log(`150th vehicle: ${vehicleData[149].lorry}`);
       }
     }
     

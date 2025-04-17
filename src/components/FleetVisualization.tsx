@@ -10,6 +10,7 @@ import FleetAnalysis from "@/components/FleetAnalysis";
 import FleetElectrificationChart from "@/components/FleetElectrificationChart";
 import VehicleDetailModal from "@/components/VehicleDetailModal";
 import { VehicleData } from "@/types/VehicleData";
+import { toast } from "@/components/ui/use-toast";
 
 interface FleetVisualizationProps {
   dataSourceUrl?: string;
@@ -21,15 +22,28 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleData | null>(null);
   
-  // Use either dataSourceUrl or jsonUrl (for backward compatibility)
-  const { vehicles, loading, error, usingMockData, fleetStats } = useFleetData(jsonUrl || dataSourceUrl);
+  // Use external data source by default
+  const externalDataUrl = "https://route-ready-viz.vercel.app/fleetData.json";
+  const dataSource = dataSourceUrl || jsonUrl || externalDataUrl;
+  
+  // Use the data source
+  const { vehicles, loading, error, usingMockData, fleetStats } = useFleetData(dataSource);
 
   // Additional logging for data visibility
   useEffect(() => {
+    console.log(`[FleetVisualization] Using data source: ${dataSource}`);
     console.log(`[FleetVisualization] Received ${vehicles.length} vehicles from useFleetData`);
     console.log(`[FleetVisualization] Loading: ${loading}, Error: ${error ? 'Yes' : 'No'}`);
     console.log(`[FleetVisualization] Stats: ${fleetStats.evReadyCount}/${fleetStats.totalVehicles} vehicles are EV-ready`);
-  }, [vehicles, loading, error, fleetStats]);
+    
+    if (vehicles.length > 0) {
+      toast({
+        title: "Data loaded successfully",
+        description: `Loaded ${vehicles.length} vehicles from ${dataSource}`,
+        duration: 3000,
+      });
+    }
+  }, [vehicles, loading, error, fleetStats, dataSource]);
 
   const handleSelectVehicle = (vehicle: VehicleData) => {
     console.log("Vehicle selected:", vehicle.lorry);
