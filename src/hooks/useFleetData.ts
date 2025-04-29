@@ -46,22 +46,18 @@ export const useFleetData = (jsonUrl: string = "") => {
           throw new Error("No vehicle data was returned");
         }
         
-        // CRITICAL: Verify the exact count here to identify discrepancies
-        console.log(`⚠️ CRITICAL COUNT CHECK: Data fetcher returned exactly ${vehicleData.length} vehicles`);
-        
         // Store the count for later comparison
         vehiclesCountRef.current = vehicleData.length;
         
-        console.log(`✅ [Attempt ${currentAttempt}] Successfully loaded ALL ${vehicleData.length} vehicles from ${dataUrl}`);
+        console.log(`✅ [Attempt ${currentAttempt}] Successfully loaded ${vehicleData.length} vehicles from ${dataUrl}`);
         console.log(`📱 Vehicle data details: First ID=${vehicleData[0]?.lorry}, Last ID=${vehicleData[vehicleData.length-1]?.lorry}`);
         
         // Calculate fleet stats
         const stats = getFleetEVReadiness(vehicleData);
         
-        console.log(`🔄 [CRITICAL] Setting state with ${vehicleData.length} vehicles`);
+        console.log(`🔄 Setting state with ${vehicleData.length} vehicles`);
         console.log(`📊 [Data Source] Using data from: ${dataUrl}`);
         
-        // IMPORTANT: Make sure we're setting state with the full array
         // Create a completely new array to avoid any reference issues
         const vehiclesToSet = [...vehicleData];
         console.log(`🔄 Pre-setState check: vehiclesToSet length is ${vehiclesToSet.length}`);
@@ -69,9 +65,6 @@ export const useFleetData = (jsonUrl: string = "") => {
         // Set state with the new data
         setVehicles(vehiclesToSet);
         setFleetStats(stats);
-        
-        // Verify after state update - this will be caught in the next useEffect
-        console.log(`🔄 Post-setState length check will happen in the next useEffect`);
         
         setLoading(false);
         toast({
@@ -110,8 +103,7 @@ export const useFleetData = (jsonUrl: string = "") => {
     // This will run after each state update with the latest values
     console.log(`📊 [State Update] Vehicles state changed: ${vehicles.length} vehicles`);
     if (vehiclesCountRef.current !== vehicles.length) {
-      console.error(`⚠️ STATE MISMATCH: Expected ${vehiclesCountRef.current} vehicles but got ${vehicles.length} in state!`);
-      console.error("This could indicate a bug in state management or array handling");
+      console.log(`Note: Vehicle count changed from ${vehiclesCountRef.current} to ${vehicles.length} during state update`);
     }
     console.log(`📊 [State Update] Fleet stats: ${fleetStats.evReadyCount}/${fleetStats.totalVehicles} vehicles are EV-ready`);
   }, [vehicles, fleetStats]);

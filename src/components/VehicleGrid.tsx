@@ -16,7 +16,7 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
     if (vehicles.length > 0) {
       console.log(`[VehicleGrid] First vehicle: ${vehicles[0].lorry}, Last vehicle: ${vehicles[vehicles.length-1].lorry}`);
       
-      // CRITICAL: Verify no records are being lost in the grid rendering
+      // Verify no records are being lost in the grid rendering
       const ids = vehicles.map(v => v.lorry);
       console.log(`[VehicleGrid] All ${ids.length} vehicle IDs in current page: ${ids.join(', ')}`);
       

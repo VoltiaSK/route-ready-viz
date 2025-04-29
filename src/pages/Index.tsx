@@ -2,10 +2,10 @@
 import FleetVisualization from "@/components/FleetVisualization";
 
 const Index = () => {
-  // Using the local data file from the public directory
-  const dataUrl = "/fleetData150.json";
+  // Using the local insSKCZ.json file from the public directory
+  const dataUrl = "/insSKCZ.json";
   
-  console.log("Index.tsx: Setting up FleetVisualization with local data URL:", dataUrl);
+  console.log("Index.tsx: Setting up FleetVisualization with data URL:", dataUrl);
   
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-[#ecefff]">
