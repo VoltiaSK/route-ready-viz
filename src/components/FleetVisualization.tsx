@@ -52,6 +52,15 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
     console.log(`🔄 [FleetVisualization] Vehicles count changed: ${vehicles.length}`);
     console.log(`📊 [FleetVisualization] Stats: ${fleetStats.evReadyCount}/${fleetStats.totalVehicles} vehicles are EV-ready`);
     
+    // CRITICAL: Check for exactly 150 vehicles
+    if (vehicles.length !== 150 && vehicles.length > 0) {
+      console.error(`⚠️ CRITICAL: Expected 150 vehicles but found ${vehicles.length}!`);
+      
+      // Get vehicle IDs to see if we can identify which one might be missing
+      const vehicleIds = vehicles.map(v => v.lorry).sort();
+      console.log(`Vehicle IDs (sorted): ${vehicleIds.join(', ')}`);
+    }
+    
     setDebugInfo({
       vehicleCount: vehicles.length,
       lastLogged: new Date(),
@@ -64,6 +73,11 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
         description: `Fleet breakdown: ${fleetStats.evReadyCount} EV-ready (${Math.round((fleetStats.evReadyCount/vehicles.length)*100)}%)`,
         duration: 3000,
       });
+      
+      // Force a check on the next render cycle to compare against expected count
+      setTimeout(() => {
+        console.log(`⏱️ DELAYED CHECK: Current vehicle count is still ${vehicles.length}`);
+      }, 1000);
     }
   }, [vehicles, fleetStats, jsonUrl]);
 
@@ -111,6 +125,13 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
 
   console.log(`[FleetVisualization render] Displaying ${vehicles.length} vehicles`);
 
+  // IMPORTANT: Add detailed diagnostics to the UI if we have fewer than 150 vehicles
+  const debugWarning = vehicles.length !== 150 ? (
+    <div className="text-xs text-amber-600 mb-2 p-2 border border-amber-300 bg-amber-50 rounded">
+      Warning: Expected 150 vehicles but loaded {vehicles.length}. Please check the browser console for details.
+    </div>
+  ) : null;
+
   return (
     <div className="w-full max-w-7xl mx-auto bg-white rounded-lg shadow-sm p-6">
       {/* Debug info */}
@@ -118,6 +139,9 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
         Loaded {vehicles.length} vehicles • Last updated: {debugInfo.lastLogged.toLocaleTimeString()} • 
         Source: {debugInfo.dataSourceUrl}
       </div>
+      
+      {/* Show debug warning if vehicle count is not 150 */}
+      {debugWarning}
       
       <FleetStats 
         totalVehicles={fleetStats.totalVehicles} 

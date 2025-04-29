@@ -76,12 +76,40 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     let vehicleData: VehicleData[] = [];
     
     if (jsonData && jsonData.data && Array.isArray(jsonData.data)) {
+      // IMPORTANT: Detailed logging to find missing vehicle issue
+      console.log(`⚠️ VERIFICATION: Raw data.data array length: ${jsonData.data.length}`);
+      
+      // Log IDs to help identify potential duplicates or invalid entries
+      const allIds = jsonData.data.map((v: any) => v.lorry);
+      console.log(`🆔 All vehicle IDs from raw data: ${allIds.join(', ')}`);
+      
+      // Check for duplicate IDs
+      const uniqueIds = new Set(allIds);
+      if (uniqueIds.size !== allIds.length) {
+        console.warn(`⚠️ Found ${allIds.length - uniqueIds.size} duplicate vehicle IDs!`);
+        const duplicates = allIds.filter((id: string, index: number) => allIds.indexOf(id) !== index);
+        console.warn(`Duplicate IDs: ${duplicates.join(', ')}`);
+      }
+      
       // Create a completely new array to avoid reference issues
       vehicleData = [...jsonData.data]; 
       console.log(`🚚 Found ${vehicleData.length} vehicles in the data.data property`);
+      
+      // Verify length matches
+      if (jsonData.data.length !== vehicleData.length) {
+        console.error(`⚠️ CRITICAL: Length mismatch! Original: ${jsonData.data.length}, Copied: ${vehicleData.length}`);
+      }
     } else if (Array.isArray(jsonData)) {
+      // IMPORTANT: Detailed logging for direct array format
+      console.log(`⚠️ VERIFICATION: Raw array length: ${jsonData.length}`);
+      
       vehicleData = [...jsonData];
       console.log(`🚚 Found ${vehicleData.length} vehicles in direct array format`);
+      
+      // Verify length matches
+      if (jsonData.length !== vehicleData.length) {
+        console.error(`⚠️ CRITICAL: Length mismatch! Original: ${jsonData.length}, Copied: ${vehicleData.length}`);
+      }
     } else {
       console.error("Unexpected data format:", jsonData);
       throw new Error("Invalid data format: Could not find vehicle data array");
@@ -96,6 +124,7 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     console.log(`🔢 Full vehicle count: ${vehicleData.length}`);
     if (vehicleData.length > 0) {
       console.log(`- First vehicle sample: ${JSON.stringify(vehicleData[0])}`);
+      console.log(`- Last vehicle sample: ${JSON.stringify(vehicleData[vehicleData.length-1])}`);
     }
     
     const endTime = performance.now();

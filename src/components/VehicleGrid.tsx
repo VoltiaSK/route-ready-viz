@@ -15,6 +15,16 @@ const VehicleGrid = ({ vehicles, onSelectVehicle }: VehicleGridProps) => {
     console.log(`[VehicleGrid] Rendering with ${vehicles.length} vehicles`);
     if (vehicles.length > 0) {
       console.log(`[VehicleGrid] First vehicle: ${vehicles[0].lorry}, Last vehicle: ${vehicles[vehicles.length-1].lorry}`);
+      
+      // CRITICAL: Verify no records are being lost in the grid rendering
+      const ids = vehicles.map(v => v.lorry);
+      console.log(`[VehicleGrid] All ${ids.length} vehicle IDs in current page: ${ids.join(', ')}`);
+      
+      // Check for duplicates that might affect count
+      const uniqueIds = new Set(ids);
+      if (uniqueIds.size !== ids.length) {
+        console.error(`⚠️ [VehicleGrid] Found duplicate IDs in grid data! Expected ${ids.length} unique IDs but got ${uniqueIds.size}`);
+      }
     }
   }, [vehicles]);
   
