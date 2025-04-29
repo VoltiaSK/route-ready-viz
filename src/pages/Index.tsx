@@ -3,7 +3,7 @@ import FleetVisualization from "@/components/FleetVisualization";
 
 const Index = () => {
   // Using the local insSKCZ.json file from the public directory
-  const dataUrl = "/insSKCZ.json";
+  const dataUrl = "/fleetdata_insurance.json";
   
   console.log("Index.tsx: Setting up FleetVisualization with data URL:", dataUrl);
   

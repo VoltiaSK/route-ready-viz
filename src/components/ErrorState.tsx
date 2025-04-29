@@ -15,7 +15,7 @@ const ErrorState = ({ error, showingMockData = false }: ErrorStateProps) => {
       <div className="fleet-viz-error-help text-sm text-gray-600">
         <p>Please check that the data source is accessible and contains valid vehicle data.</p>
         <p className="mt-2 text-xs">
-          Expected file: <code>/fleetData150.json</code>
+          Expected file: <code>/fleetdata_insurance.json</code>
         </p>
         <p className="mt-1 text-xs">The file should contain a JSON object with a 'data' property that is an array of vehicle objects.</p>
         <p className="mt-1 text-xs">Example format: <code>{`{"data": [{"depot": "SK", "lorry": "7M12345", ...}]}`}</code></p>
@@ -28,7 +28,7 @@ const ErrorState = ({ error, showingMockData = false }: ErrorStateProps) => {
           <h4 className="font-medium text-xs text-gray-700 mb-1">Troubleshooting steps:</h4>
           <ol className="list-decimal list-inside text-xs text-gray-600">
             <li>Verify the file exists in the 'public' directory</li>
-            <li>Check that the file name matches exactly 'fleetData150.json'</li>
+            <li>Check that the file name matches exactly 'fleetdata_insurance.json'</li>
             <li>Ensure the JSON format matches the expected structure</li>
             <li>Try refreshing the page</li>
           </ol>
