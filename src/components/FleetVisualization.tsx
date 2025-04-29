@@ -23,11 +23,8 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleData | null>(null);
   
-  // Use the fleetData hook to load and manage vehicle data
-  // Try the new JSON file first
-  const { vehicles, loading, error, usingMockData, fleetStats } = useFleetData(
-    jsonUrl || "fleetData150.json"
-  );
+  // Initialize with no data - only load if URL is provided
+  const { vehicles, loading, error, usingMockData, fleetStats } = useFleetData(jsonUrl || "");
   
   // Use the fleetFilters hook to manage filtering and pagination
   const {
@@ -47,7 +44,7 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
   const [debugInfo, setDebugInfo] = useState({
     vehicleCount: 0,
     lastLogged: new Date(),
-    dataSourceUrl: jsonUrl || "fleetData150.json"
+    dataSourceUrl: jsonUrl || "No data source"
   });
 
   // Log data for debugging
@@ -55,14 +52,13 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
     console.log(`🔄 [FleetVisualization] Vehicles count changed: ${vehicles.length}`);
     console.log(`📊 [FleetVisualization] Stats: ${fleetStats.evReadyCount}/${fleetStats.totalVehicles} vehicles are EV-ready`);
     
-    // Make sure we have the right data before updating debug info
+    setDebugInfo({
+      vehicleCount: vehicles.length,
+      lastLogged: new Date(),
+      dataSourceUrl: jsonUrl || "No data source"
+    });
+    
     if (vehicles.length > 0) {
-      setDebugInfo({
-        vehicleCount: vehicles.length,
-        lastLogged: new Date(),
-        dataSourceUrl: jsonUrl || "fleetData150.json"
-      });
-      
       toast({
         title: `${vehicles.length} vehicles loaded`,
         description: `Fleet breakdown: ${fleetStats.evReadyCount} EV-ready (${Math.round((fleetStats.evReadyCount/vehicles.length)*100)}%)`,
@@ -84,8 +80,25 @@ const FleetVisualization = ({ dataSourceUrl, jsonUrl }: FleetVisualizationProps)
     return <LoadingState />;
   }
 
+  const noDataMessage = !jsonUrl ? (
+    <div className="w-full max-w-7xl mx-auto bg-white rounded-lg shadow-sm p-6 text-center">
+      <h2 className="text-xl font-semibold mb-4">Fleet Visualization Ready</h2>
+      <p className="text-gray-500 mb-4">
+        No data source provided. The visualization is ready to accept external data.
+      </p>
+      <p className="text-sm text-gray-400">
+        To load data, provide a jsonUrl parameter.
+      </p>
+    </div>
+  ) : null;
+
   if (error) {
     return <ErrorState error={error} showingMockData={usingMockData} />;
+  }
+
+  // Display empty state when no data source is provided
+  if (!jsonUrl) {
+    return noDataMessage;
   }
 
   // Safety check - if somehow we got no vehicles but no error either

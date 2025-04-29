@@ -1,3 +1,4 @@
+
 import { VehicleData } from "@/types/VehicleData";
 
 /**
@@ -5,6 +6,11 @@ import { VehicleData } from "@/types/VehicleData";
  */
 export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
   try {
+    if (!url) {
+      console.log("No URL provided to fetch vehicle data.");
+      return [];
+    }
+
     console.log(`🔍 Fetching vehicle data from: ${url}`);
     const startTime = performance.now();
     
@@ -75,8 +81,10 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     
     // Log data characteristics for debugging - log full count to verify all records
     console.log(`🔢 Full vehicle count: ${vehicleData.length}`);
-    console.log(`- First 5 IDs: ${vehicleData.slice(0, 5).map(v => v.lorry).join(', ')}`);
-    console.log(`- Last 5 IDs: ${vehicleData.slice(-5).map(v => v.lorry).join(', ')}`);
+    if (vehicleData.length > 0) {
+      console.log(`- First 5 IDs: ${vehicleData.slice(0, Math.min(5, vehicleData.length)).map(v => v.lorry).join(', ')}`);
+      console.log(`- Last 5 IDs: ${vehicleData.slice(-Math.min(5, vehicleData.length)).map(v => v.lorry).join(', ')}`);
+    }
     
     // Check for duplicate keys to identify potential overwriting
     const lorryIds = new Map();
@@ -130,6 +138,14 @@ export const getFleetEVReadiness = (vehicles: VehicleData[]): {
 } => {
   console.log(`Calculating EV readiness for ${vehicles.length} vehicles`);
   
+  if (vehicles.length === 0) {
+    return {
+      evReadyCount: 0,
+      evReadyPercentage: 0,
+      totalVehicles: 0
+    };
+  }
+  
   const evReadyVehicles = vehicles.filter(isVehicleEVReady);
   const evReadyCount = evReadyVehicles.length;
   const totalVehicles = vehicles.length;
@@ -141,7 +157,7 @@ export const getFleetEVReadiness = (vehicles: VehicleData[]): {
   
   // Calculate percentage of routes that can be served by EVs
   // Currently hardcoded to 92% as per original implementation
-  const routePercentage = 92;
+  const routePercentage = evReadyCount > 0 ? 92 : 0;
   console.log(`These ${evReadyCount} EV-ready vehicles handle ${routePercentage}% of all routes`);
   
   return {

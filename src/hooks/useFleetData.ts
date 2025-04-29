@@ -4,9 +4,9 @@ import { VehicleData } from "@/types/VehicleData";
 import { fetchVehicleData, getFleetEVReadiness } from "@/utils/dataFetcher";
 import { toast } from "@/components/ui/use-toast";
 
-export const useFleetData = (jsonUrl: string = "fleetData150.json") => {
+export const useFleetData = (jsonUrl: string = "") => {
   const [vehicles, setVehicles] = useState<VehicleData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [usingMockData, setUsingMockData] = useState(false);
   const [fleetStats, setFleetStats] = useState({
@@ -20,6 +20,12 @@ export const useFleetData = (jsonUrl: string = "fleetData150.json") => {
   const loadAttempts = useRef(0);
 
   useEffect(() => {
+    // Only attempt to load data if a jsonUrl is provided
+    if (!jsonUrl) {
+      console.log("No data URL provided. Fleet visualization ready for external data.");
+      return;
+    }
+
     const loadData = async () => {
       setLoading(true);
       setError(null);
