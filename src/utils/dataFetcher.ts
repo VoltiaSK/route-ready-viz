@@ -1,3 +1,4 @@
+
 import { VehicleData } from "@/types/VehicleData";
 
 /**
@@ -19,11 +20,14 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     
     // Add more detailed logging
     console.log(`Attempting fetch with mode: cors, method: GET`);
+    console.log(`Base URL: ${window.location.origin}, Relative URL: ${url}`);
     
-    const response = await fetch(url, {
+    // Ensure the URL is absolute for local files
+    const fetchUrl = url.startsWith('http') ? url : `${window.location.origin}${url.startsWith('/') ? url : `/${url}`}`;
+    console.log(`Final fetch URL: ${fetchUrl}`);
+    
+    const response = await fetch(fetchUrl, {
       method: 'GET',
-      mode: 'cors',
-      credentials: 'omit',
       headers: {
         'Accept': 'application/json',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
