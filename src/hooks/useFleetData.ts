@@ -35,6 +35,8 @@ export const useFleetData = (jsonUrl: string = "") => {
         const dataUrl = jsonUrl;
         const currentAttempt = ++loadAttempts.current;
         console.log(`⏳ [Attempt ${currentAttempt}] Loading fleet data from: ${dataUrl}`);
+        console.log(`Browser location: ${window.location.href}`);
+        console.log(`Using fetch with URL: ${dataUrl}`);
         
         // Fetch the vehicle data as a new array
         const vehicleData = await fetchVehicleData(dataUrl);
@@ -71,7 +73,9 @@ export const useFleetData = (jsonUrl: string = "") => {
         });
       } catch (err: any) {
         console.error("❌ Failed to load fleet data:", err);
-        setError(err.message || "Failed to load fleet data. Please check the data source.");
+        // Create a more detailed error message including the URL and error details
+        const errorMessage = `Failed to load fleet data from ${jsonUrl}. Error: ${err.message || 'Unknown error'}`;
+        setError(errorMessage);
         
         setVehicles([]);
         setFleetStats({

@@ -1,4 +1,3 @@
-
 import { VehicleData } from "@/types/VehicleData";
 
 /**
@@ -18,18 +17,27 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
     
+    // Add more detailed logging
+    console.log(`Attempting fetch with mode: cors, method: GET`);
+    
     const response = await fetch(url, {
-      cache: 'no-store', // Prevent caching issues
+      method: 'GET',
+      mode: 'cors',
+      credentials: 'omit',
       headers: {
         'Accept': 'application/json',
-        'Cache-Control': 'no-cache'
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
       },
-      mode: 'cors', // Enable CORS for external URLs
-      signal: controller.signal,
-      credentials: 'omit' // Avoid sending credentials
+      signal: controller.signal
     });
     
     clearTimeout(timeoutId);
+    
+    // Log the response status and headers for debugging
+    console.log(`Response status: ${response.status} ${response.statusText}`);
+    console.log(`Response headers:`, Object.fromEntries(response.headers.entries()));
     
     if (!response.ok) {
       throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
@@ -37,7 +45,7 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     
     // Get the raw text response before parsing
     const responseText = await response.text();
-    console.log(`📊 Raw data length: ${responseText.length} characters`);
+    console.log(`📊 Raw data received: ${responseText.length} characters`);
     
     // Check if the response is empty
     if (!responseText || responseText.trim() === '') {
@@ -49,6 +57,7 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     try {
       jsonData = JSON.parse(responseText);
       console.log(`💾 Successfully parsed JSON data, checking structure...`);
+      console.log('Data structure preview:', JSON.stringify(jsonData).substring(0, 200) + '...');
     } catch (parseError: any) {
       console.error("JSON parsing error:", parseError);
       throw new Error(`Invalid JSON format: ${parseError.message}`);
@@ -82,44 +91,21 @@ export const fetchVehicleData = async (url: string): Promise<VehicleData[]> => {
     // Log data characteristics for debugging - log full count to verify all records
     console.log(`🔢 Full vehicle count: ${vehicleData.length}`);
     if (vehicleData.length > 0) {
-      console.log(`- First 5 IDs: ${vehicleData.slice(0, Math.min(5, vehicleData.length)).map(v => v.lorry).join(', ')}`);
-      console.log(`- Last 5 IDs: ${vehicleData.slice(-Math.min(5, vehicleData.length)).map(v => v.lorry).join(', ')}`);
-    }
-    
-    // Check for duplicate keys to identify potential overwriting
-    const lorryIds = new Map();
-    const duplicates: string[] = [];
-    
-    vehicleData.forEach((vehicle, index) => {
-      if (lorryIds.has(vehicle.lorry)) {
-        duplicates.push(vehicle.lorry);
-      } else {
-        lorryIds.set(vehicle.lorry, index);
-      }
-    });
-    
-    if (duplicates.length > 0) {
-      console.warn(`⚠️ Found ${duplicates.length} duplicate lorry IDs: ${duplicates.join(', ')}`);
-    }
-    
-    // Verify every vehicle has required fields
-    const incompleteVehicles = vehicleData.filter(v => 
-      !v.lorry || !v.depot || v.max_95_perc === undefined || v.average_distance === undefined
-    );
-    
-    if (incompleteVehicles.length > 0) {
-      console.warn(`⚠️ Found ${incompleteVehicles.length} incomplete vehicle records`);
-      console.log(`First incomplete record example: ${JSON.stringify(incompleteVehicles[0])}`);
+      console.log(`- First vehicle sample: ${JSON.stringify(vehicleData[0])}`);
     }
     
     const endTime = performance.now();
     console.log(`⏱️ Data fetching completed in ${(endTime - startTime).toFixed(2)}ms.`);
-    console.log(`🔄 RETURNING FULL DATASET with ${vehicleData.length} vehicles`);
     
     // Return the complete array - important to keep the reference to a new array
     return vehicleData;
   } catch (error: any) {
     console.error("❌ Error fetching vehicle data:", error);
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    if (error.name === 'AbortError') {
+      throw new Error('Request timed out. Please check your network connection and try again.');
+    }
     throw error;
   }
 };
