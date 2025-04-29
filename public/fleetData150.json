@@ -1779,15 +1779,15 @@
     },
     {
       "depot": "CZ",
-      "lorry": "7B19264",
-      "average_distance": 177,
-      "minimum_distance": 53,
-      "maximum_distance": 294,
+      "lorry": "7X19359",
+      "average_distance": 185,
+      "minimum_distance": 55,
+      "maximum_distance": 290,
       "median_distance": 177,
-      "min_95_perc": 88,
-      "max_95_perc": 265,
-      "average_highway_distance": 106,
-      "median_highway": 99
+      "min_95_perc": 90,
+      "max_95_perc": 262,
+      "average_highway_distance": 115,
+      "median_highway": 102
     }
   ]
 }
